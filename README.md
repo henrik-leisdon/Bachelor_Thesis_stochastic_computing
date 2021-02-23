@@ -1,2 +1,2 @@
-# Bachelor_Thesis_stochastic_computing
+# Bachelo Thesis stochastic computing
 These are the implementations for my bachelor thesis
