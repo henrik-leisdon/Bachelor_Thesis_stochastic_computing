@@ -1,7 +1,11 @@
 # test queue algorithm
+# oriented on http://openbookproject.net/courses/python4fun/logic.html
 
 class Connector:
+    """Connector connects inputs with gates, gates with gates and gates with output
+        sets values and monitors connection"""
     def __init__(self, referred_gate, name, activates=0, monitor=0):
+
         self.value = None
         self.referred_gate = referred_gate
         self.name = name
@@ -22,7 +26,7 @@ class Connector:
         if self.activates:
             self.referred_gate.evaluate()
         if self.monitor:
-            print(str(self.referred_gate.name)+ ' input ' + str(self.name) + ', value = ' + str(value))
+            print(str(self.referred_gate.name)+ ' ' + str(self.name) + ', value = ' + str(value))
 
         for connection in self.connects:
             connection.set(value)
