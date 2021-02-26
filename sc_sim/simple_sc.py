@@ -95,8 +95,14 @@ def main(a, b, c):
     c1.in_a.set(a)
     c1.in_b.set(b)
     c1.in_c.set(c)
+    print(c1.out.value)
+    i = c1.out.value
+    c1.in_a.set(i)
+    c1.in_b.set(b)
+    c1.in_c.set(c)
+    print(c1.out.value)
 
 
 if __name__ == "__main__":
-    main(0, 1, 0)
+    main(1, 0, 1)
 
