@@ -1,4 +1,5 @@
 import SNG
+import stochastic_to_binary
 
 
 # https://www.collindelker.com/2014/08/29/electrical-schematic-drawing-python.html for drawing circuits
@@ -39,25 +40,24 @@ class Connector:
 # --------------- Gates ---------------------------------------------
 
 class Gate:
-    def __init__(self, name, tau):
+    def __init__(self, name):
         self.name = name
-        self.tau = tau
 
     def evaluate(self):
         return
 
 
 class Gate2(Gate):
-    def __init__(self, name, tau):
-        Gate.__init__(self, name, tau)
+    def __init__(self, name):
+        Gate.__init__(self, name)
         self.in1 = Connector(self, 'in_1', activates=1)
         self.in2 = Connector(self, 'in_2', activates=1)
         self.out = Connector(self, 'out')
 
 
 class Gate3(Gate):
-    def __init__(self, name, tau):
-        Gate.__init__(self, name, tau)
+    def __init__(self, name):
+        Gate.__init__(self, name)
         self.in1 = Connector(self, 'in_1', activates=1)
         self.in2 = Connector(self, 'in_2', activates=1)
         self.in3 = Connector(self, 'in_3', activates=1)
@@ -65,24 +65,24 @@ class Gate3(Gate):
 
 
 class AND(Gate2):
-    def __init__(self, name, tau):
-        Gate2.__init__(self, name, tau)
+    def __init__(self, name):
+        Gate2.__init__(self, name)
 
     def evaluate(self):
         self.out.set(self.in1.value and self.in2.value)
 
 
 class OR(Gate2):
-    def __init__(self, name, tau):
-        Gate2.__init__(self, name, tau)
+    def __init__(self, name):
+        Gate2.__init__(self, name)
 
     def evaluate(self):
         self.out.set(self.in1.value or self.in2.value)
 
 
 class NOR(Gate2):
-    def __init__(self, name, tau):
-        Gate2.__init__(self, name, tau)
+    def __init__(self, name):
+        Gate2.__init__(self, name)
 
     def evaluate(self):
         if self.in1.value == 0 and self.in2.value == 0:
@@ -92,8 +92,8 @@ class NOR(Gate2):
 
 
 class XOR(Gate2):
-    def __init__(self, name, tau):
-        Gate2.__init__(self, name, tau)
+    def __init__(self, name):
+        Gate2.__init__(self, name)
 
     def evaluate(self):
         if self.in1.value == 1 and self.in2.value == 0 or self.in1.value == 0 and self.in2.value == 1:
@@ -103,8 +103,8 @@ class XOR(Gate2):
 
 
 class Update(Gate3):
-    def __init__(self, name, tau):
-        Gate3.__init__(self, name, tau)  # input for unsure 01/10
+    def __init__(self, name):
+        Gate3.__init__(self, name)
 
     def evaluate(self):
         if self.in1.value == 1 and self.in2.value == 1:
@@ -113,15 +113,14 @@ class Update(Gate3):
             self.out.set(0)
         else:
             self.out.set(self.in3.value)
-            print('in update ' + str(self.in3.value))
 
 
 # --------------- Circuit components ---------------------------------------------
 
 
 class MainStochasticCore(Gate):
-    def __init__(self, name, tau):
-        Gate.__init__(self, name, tau)
+    def __init__(self, name):
+        Gate.__init__(self, name)
 
         # set input
         self.y_0 = Connector(self, 'y_0', 1, monitor=1)
@@ -141,13 +140,13 @@ class MainStochasticCore(Gate):
         self.y_5_out = Connector(self, 'y_5_out', monitor=1)
 
         # gates
-        self.XOR_0 = XOR('XOR_0', tau)
-        self.XOR_1 = XOR('XOR_1', tau)
-        self.XOR_2 = XOR('XOR_2', tau)
+        self.XOR_0 = XOR('XOR_0')
+        self.XOR_1 = XOR('XOR_1')
+        self.XOR_2 = XOR('XOR_2')
 
-        self.Update_0 = Update('Update_0', tau)
-        self.Update_1 = Update('Update_1', tau)
-        self.Update_2 = Update('Update_2', tau)
+        self.Update_0 = Update('Update_0')
+        self.Update_1 = Update('Update_1')
+        self.Update_2 = Update('Update_2')
 
         self.y_0.connect([self.XOR_1.in1, self.XOR_2.in1, self.y_4_out, self.Update_0.in3])
         self.y_1.connect([self.Update_2.in2, self.y_5_out, self.Update_1.in3])
@@ -165,11 +164,10 @@ class MainStochasticCore(Gate):
         self.XOR_2.out.connect([self.y_3_out])
 
 
-def main(tau, y_in):
+def evaluate_msc(y_in):
     y = y_in
     y_out = [[], [], [], [], [], []]
-    print('y = ' + str(y))
-    MSC = MainStochasticCore('MSC', tau)
+    MSC = MainStochasticCore('MSC')
 
     for i in range(0, len(y[0])):
         MSC.y_0.set(y[0][i])
@@ -185,19 +183,27 @@ def main(tau, y_in):
         y_out[3].append(MSC.y_3_out.value)
         y_out[4].append(MSC.y_4_out.value)
         y_out[5].append(MSC.y_5_out.value)
+    print('y_out: ' + str(y_out))
+    return y_out
 
-    print('round done ' + str(y_out))
+
+def main():
+    input = [1, 0, 0, 0, 1, 1]
+
+    sng = SNG.StochasticNumberGenerator('sng', 0.1, 10, input)
+    y_in = sng.generate_stochastic_bitstream()
+    parity = False
+    i = 0
+    threshold = 10
+    while parity == False and i < threshold:
+        print('yin = ' + str(y_in))
+        y_out = evaluate_msc(y_in)
+        x_out = stochastic_to_binary.convert_all(y_out)
+        parity = stochastic_to_binary.parity_check(x_out)
+        print(parity)
+        y_in = y_out
+        i += 1
 
 
 if __name__ == '__main__':
-    input = [1, 0, 0, 1, 1, 1]
-    sng = SNG.StochasticNumberGenerator('sng', 0.1, 10, input)
-    y_in = sng.generate_stochastic_bitstream()
-    print('yin = ' + str(y_in))
-    y_in2 = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-            [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-            [1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
-    main(2, y_in)
+    main()

@@ -26,7 +26,7 @@ class Connector:
         if self.activates:
             self.referred_gate.evaluate()
         if self.monitor:
-            print(str(self.referred_gate.name)+ ' ' + str(self.name) + ', value = ' + str(value))
+            print(str(self.referred_gate.name) + ' ' + str(self.name) + ', value = ' + str(value))
 
         for connection in self.connects:
             connection.set(value)
