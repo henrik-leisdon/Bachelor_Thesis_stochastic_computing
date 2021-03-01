@@ -1,4 +1,7 @@
+# stochastic to binary + parity check
+
 def convert_all(prob_y):
+    """convert for all 6 evaluated bistreams"""
     x_out = []
     for i in range(0, len(prob_y)):
         x_out.append(convert(prob_y[i]))
@@ -6,6 +9,7 @@ def convert_all(prob_y):
 
 
 def convert(prob_bitstream):
+    """convert bitstream to probability and rounds it to 1 or 0"""
     one_counter = 0
 
     for i in range(0, len(prob_bitstream)):
@@ -16,6 +20,7 @@ def convert(prob_bitstream):
 
 
 def round(probability):
+    """round probability to 1, 0 or -1"""
     if probability > 0.75:
         return 1
     elif probability < 0.25:
@@ -32,6 +37,7 @@ def x_or(a, b):
 
 
 def parity_check(x_output):
+    """checks if parity of the output is 0"""
     print('x_out: ' + str(x_output))
     parity = True
     for i in x_output:

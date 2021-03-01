@@ -1,5 +1,5 @@
 import SNG
-import stochastic_to_binary
+import STB
 
 
 # https://www.collindelker.com/2014/08/29/electrical-schematic-drawing-python.html for drawing circuits
@@ -19,12 +19,16 @@ class Connector:
         self.activates = activates
 
     def connect(self, inputs):
+        """add inputs to connection list
+        @:param inputs: list of connected gates"""
         if not isinstance(inputs, list):
             inputs = [inputs]
         for input in inputs:
             self.connects.append(input)
 
     def set(self, value):
+        """set the value for the current connector
+           recursive run for all gates"""
         if self.value == value:
             return
         self.value = value
@@ -119,6 +123,7 @@ class Update(Gate3):
 
 
 class MainStochasticCore(Gate):
+    """Main stochastic core for computing the circuit"""
     def __init__(self, name):
         Gate.__init__(self, name)
 
@@ -139,7 +144,7 @@ class MainStochasticCore(Gate):
         self.y_4_out = Connector(self, 'y_4_out', monitor=1)
         self.y_5_out = Connector(self, 'y_5_out', monitor=1)
 
-        # gates
+        # set gates
         self.XOR_0 = XOR('XOR_0')
         self.XOR_1 = XOR('XOR_1')
         self.XOR_2 = XOR('XOR_2')
@@ -148,6 +153,7 @@ class MainStochasticCore(Gate):
         self.Update_1 = Update('Update_1')
         self.Update_2 = Update('Update_2')
 
+        # connect gates and inputs
         self.y_0.connect([self.XOR_1.in1, self.XOR_2.in1, self.y_4_out, self.Update_0.in3])
         self.y_1.connect([self.Update_2.in2, self.y_5_out, self.Update_1.in3])
         self.y_2.connect([self.XOR_0.in1, self.Update_1.in1, self.XOR_2.in2, self.Update_2.in3])
@@ -165,6 +171,7 @@ class MainStochasticCore(Gate):
 
 
 def evaluate_msc(y_in):
+    """run main stochastic core for every bit in the stochastic bit stream, for every y_i"""
     y = y_in
     y_out = [[], [], [], [], [], []]
     MSC = MainStochasticCore('MSC')
@@ -188,7 +195,7 @@ def evaluate_msc(y_in):
 
 
 def main():
-    input = [1, 0, 0, 0, 1, 1]
+    input = [1, 0, 0, 1, 1, 1]
 
     sng = SNG.StochasticNumberGenerator('sng', 0.1, 10, input)
     y_in = sng.generate_stochastic_bitstream()
@@ -198,8 +205,8 @@ def main():
     while parity == False and i < threshold:
         print('yin = ' + str(y_in))
         y_out = evaluate_msc(y_in)
-        x_out = stochastic_to_binary.convert_all(y_out)
-        parity = stochastic_to_binary.parity_check(x_out)
+        x_out = STB.convert_all(y_out)
+        parity = STB.parity_check(x_out)
         print(parity)
         y_in = y_out
         i += 1
