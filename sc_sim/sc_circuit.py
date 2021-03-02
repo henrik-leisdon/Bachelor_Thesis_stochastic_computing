@@ -74,6 +74,7 @@ class AND(Gate2):
 
     def evaluate(self):
         self.out.set(self.in1.value and self.in2.value)
+        # if self.in.value == False -> out = false
 
 
 class OR(Gate2):
