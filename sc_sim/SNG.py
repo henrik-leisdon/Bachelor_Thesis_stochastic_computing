@@ -2,6 +2,9 @@ from fractions import Fraction
 from decimal import Decimal
 import random
 
+# in: set of n bits
+# out set of n bitstreams
+
 
 def bit_not(a):
     if a == 1:
