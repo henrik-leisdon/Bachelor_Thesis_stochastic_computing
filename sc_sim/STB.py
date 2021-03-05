@@ -4,9 +4,12 @@
 
 def convert_all(prob_y):
     """convert for all 6 evaluated bistreams"""
+
     x_out = []
     for i in range(0, len(prob_y)):
+
         x_out.append(convert(prob_y[i]))
+
     return x_out
 
 
@@ -15,13 +18,14 @@ def convert(prob_bitstream):
     one_counter = 0
 
     for i in range(0, len(prob_bitstream)):
+
         if prob_bitstream[i] == 1:
             one_counter += 1
 
-    return round(one_counter / len(prob_bitstream))
+    return prob_round(one_counter / len(prob_bitstream))
 
 
-def round(probability):
+def prob_round(probability):
     """round probability to 1, 0 or -1"""
     if probability > 0.75:
         return 1
@@ -36,12 +40,3 @@ def x_or(a, b):
         return 1
     else:
         return 0
-
-
-def main():
-    par = parity_check([1, 0, 0, 1, 1, 0])
-    print(par)
-
-
-if __name__ == '__main__':
-    main()

@@ -1,5 +1,12 @@
 # in: set of bits
 # out: parity value true or false
+def x_or(a, b):
+    if a == 0 and b == 1 or a == 1 and b == 0:
+        return 1
+    else:
+        return 0
+
+
 def parity_check(x_output):
     """checks if parity of the output is 0"""
     print('x_out: ' + str(x_output))

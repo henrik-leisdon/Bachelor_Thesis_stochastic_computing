@@ -195,23 +195,5 @@ def evaluate_msc(y_in):
     return y_out
 
 
-def main():
-    input = [1, 0, 0, 1, 1, 1]
-
-    sng = SNG.StochasticNumberGenerator('sng', 0.1, 10, input)
-    y_in = sng.generate_stochastic_bitstream()
-    parity = False
-    i = 0
-    threshold = 10
-    while parity == False and i < threshold:
-        print('yin = ' + str(y_in))
-        y_out = evaluate_msc(y_in)
-        x_out = STB.convert_all(y_out)
-        parity = STB.parity_check(x_out)
-        print(parity)
-        y_in = y_out
-        i += 1
 
 
-if __name__ == '__main__':
-    main()
