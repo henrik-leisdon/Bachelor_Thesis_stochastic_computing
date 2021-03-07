@@ -127,6 +127,7 @@ def main():
 
     wsng = WeightedStochasticNumberGenerator('wsng', 0.1)
     i = wsng.generate_stochastic_bitstream(input)
+    print('wsng: ' + str(i))
 
 
 if __name__ == '__main__':

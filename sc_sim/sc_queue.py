@@ -14,6 +14,7 @@ class Connection:
 class Gate:
     def __init__(self, name):
         self.name = name
+        self.tau = 0
 
 
 class Gate2(Gate):
@@ -208,7 +209,9 @@ class Circuit(Gate):
                 print(gate.name + ' evaluated: ' + str(gate.value))
                 gate.update()
             else:
-                self.gate_list.append(gate)
+                gate.tau += 1
+                if gate.tau < 5:
+                    self.gate_list.append(gate)
 
         print('end')
         y_out = []
@@ -220,7 +223,7 @@ class Circuit(Gate):
 def main():
     c = Circuit('c')
     c.generate()
-    y = c.run_circuit([1, 0, 0, 1, 1, 1])
+    y = c.run_circuit([1, 0, 1, 0, 1, 1])
     print(y)
 
 
