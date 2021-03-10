@@ -101,7 +101,6 @@ class WeightedStochasticNumberGenerator:  # in probability y_i
 
         stochastic_number = []
 
-
         for i in range(0, length):
             random_list = WeightedStochasticNumberGenerator.init_sn(0)
             weight = weight_gen(random_list)
@@ -114,8 +113,6 @@ class WeightedStochasticNumberGenerator:  # in probability y_i
 
             random_list.pop(0)
             random_list.append(random.randrange(0, 2))
-
-
 
         # print(stochastic_number)
         return stochastic_number
@@ -138,11 +135,18 @@ class SngHandler:
         self.msc_link = None
 
     def generate(self, input, bit_length):
+        """generate 6 random bitstreams
+        @:param input: recieved message
+        @:param bit_length: length of each bitstream (the larger, the more accurate)
+        @:return: 6 n bit bitstreams"""
         y_out = self.wsng.generate_stochastic_bitstream(input, bit_length)
         return y_out
 
 
+# ---------------------------------------------------------------------------------------------------
+
 def main():
+    """Main method for testing, DON'T DELETE"""
     # sng = StochasticNumberGenerator('sng', 0.1, 10)
     # stoch_num_list = []
     # for i in range(0, 6):

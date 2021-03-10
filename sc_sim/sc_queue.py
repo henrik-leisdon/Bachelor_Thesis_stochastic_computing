@@ -237,11 +237,14 @@ class MscHandler:
         y_out = self.sc.run_circuit(input)
 
     def msc_to_sng(self, input, bitlength):
-        """request n bits from the sng to compute and return"""
+        """request n bits from the sng to compute and return
+            y_in = 6 n bit bitstreams"""
+        # TODO: parser from bitream to bit and append bit to bitstream
+
         y_in = self.sng_link.generate(input, bitlength)
-
+        #parse
         y_out = self.sc.run_circuit(y_in)
-
+        # append y_out to bitsream of STB
         return y_out
 
 

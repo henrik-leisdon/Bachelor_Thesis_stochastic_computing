@@ -12,7 +12,7 @@ class Pipeline:
         self.stb = STB.StochToBin('stb')
 
 
-        #link
+        # link
         self.stb.msc_link = self.msc
         self.msc.sng_link = self.sng
         self.msc.stb_link = self.stb
@@ -22,6 +22,7 @@ class Pipeline:
         # stb.call(20) 20 bits called
 
         y_bit = self.stb.request_bits(input, bitlength)
+        out = self.stb.x_out
 
 
 

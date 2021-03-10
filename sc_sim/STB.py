@@ -44,6 +44,7 @@ class StochToBin:
 
     def request_bits(self, input, bitlength):
         y_out = self.msc_link.msc_to_sng(input, bitlength)
+        self.convert()
 
 
 # call_from_stb(20) bits
