@@ -1,4 +1,5 @@
 class Connection:
+    """Input/connector for every gate"""
     def __init__(self, name):
         self.name = name
         self.value = None
@@ -143,6 +144,7 @@ class Update(Gate2):
 
 
 class Circuit(Gate):
+    """Cirucit class, initilaize the circuit model"""
     def __init__(self, name):
         Gate.__init__(self, name)
         self.gate_list = []
@@ -193,6 +195,8 @@ class Circuit(Gate):
                                self.y_4_out, self.y_5_out])
 
     def run_circuit(self, input):
+        """run circuit
+        @:param input: 1 input bit from every stocastic bitstream"""
         print('run circuit')
         self.y_0.value = input[0]
         self.y_1.value = input[1]
@@ -220,10 +224,31 @@ class Circuit(Gate):
         return y_out
 
 
+class MscHandler:
+    def __init__(self, name):
+        self.name = name
+        self.stb_link = None
+        self.sng_link = None
+        self.sc = Circuit('sub_circuit_1')
+        self.sc.generate()
+
+    def run_msc(self, input):
+        # needs to be extended to alternate between out and input as input
+        y_out = self.sc.run_circuit(input)
+
+    def msc_to_sng(self, input, bitlength):
+        """request n bits from the sng to compute and return"""
+        y_in = self.sng_link.generate(input, bitlength)
+
+        y_out = self.sc.run_circuit(y_in)
+
+        return y_out
+
+
 def main():
     c = Circuit('c')
     c.generate()
-    y = c.run_circuit([1, 0, 1, 0, 1, 1])
+    y = c.run_circuit([1, 0, 0, 1, 1, 1])
     print(y)
 
 

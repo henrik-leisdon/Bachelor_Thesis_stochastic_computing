@@ -3,8 +3,8 @@ from decimal import Decimal
 import random
 
 
-# in: set of n bits
-# out set of n bitstreams
+# in: set of n bits, recieved message
+# out set of n bitstreams, probabilistic bitstreams
 
 
 def bit_not(a):
@@ -36,6 +36,7 @@ class StochasticNumberGenerator:
         self.name = name
         self.p_e = p_e
         self.stream_length = stream_length
+        self.prob_bitsreams = []
 
     def generate_stochastic_number(self, input_bit):
         """generates (pseudo) stochastic bitstream
@@ -59,6 +60,7 @@ class StochasticNumberGenerator:
         for i in range(0, 6):
             b = self.generate_stochastic_number(input[i])
             stoch_num_list.append(b)
+        self.prob_bitsreams.append(stoch_num_list)
         return stoch_num_list
 
 
@@ -68,36 +70,44 @@ class WeightedStochasticNumberGenerator:  # in probability y_i
     def __init__(self, name, p_e):
         self.name = name
         self.p_e = p_e
+        self.prob_bitsreams = []
 
     @staticmethod
-    def init_sn():
+    def init_sn(tau):
         stochastic_number = []
         for i in range(0, 4):
             r = random.randrange(0, 2)
             stochastic_number.append(r)
+        print(int("".join(str(i) for i in stochastic_number), 2))
+        if int("".join(str(i) for i in stochastic_number), 2) > 10:
+            print('in if:' + str(int("".join(str(i) for i in stochastic_number), 2)))
+            tau += 1
+            if tau == 10:
+                return [0, 0, 0, 1]
+            WeightedStochasticNumberGenerator.init_sn(tau)
+
         return stochastic_number
 
-    def generate_weighted_number(self, input_x):
+    def generate_weighted_number(self, input_x, length):
         """generates (pseudo) stochastic bitstream with weights
         @:param input_bit: bit to generate a bitstream for
         @:return: stochastic bistream for input bit"""
         probability = input_x * (1 - self.p_e) + self.p_e * (1 - input_x)
 
         frac = Fraction(Decimal(str(probability)))
-        # print(frac)
-        ratio = 16 / frac.denominator
-        new_num = int(frac.numerator * ratio)
-        # print(new_num)
-        binary_list = list(bin(new_num)[2:].zfill(4))
-        # print(binary_list)
+        numerator = int(frac.numerator)
 
-        random_list = WeightedStochasticNumberGenerator.init_sn()
+        binary_list = list(bin(numerator)[2:].zfill(4))
+
         stochastic_number = []
 
-        for i in range(0, frac.denominator):
+
+        for i in range(0, length):
+            random_list = WeightedStochasticNumberGenerator.init_sn(0)
             weight = weight_gen(random_list)
-            # print('r: ' + str(random_list))
-            # print('w: ' + str(weight))
+            print('r: ' + str(random_list))
+            print('w: ' + str(weight))
+
             n = weight[0] and binary_list[0] or weight[1] and binary_list[1] or \
                 weight[2] and binary_list[2] or weight[3] and binary_list[3]
             stochastic_number.append(int(n))
@@ -105,28 +115,43 @@ class WeightedStochasticNumberGenerator:  # in probability y_i
             random_list.pop(0)
             random_list.append(random.randrange(0, 2))
 
+
+
         # print(stochastic_number)
         return stochastic_number
 
-    def generate_stochastic_bitstream(self, input):
+    def generate_stochastic_bitstream(self, input, length):
         """generate for every input bit a stochastic bitstream
         @:return: list of stochastic bitstreams"""
         stoch_num_list = []
         for i in range(0, 6):
-            b = self.generate_weighted_number(input[i])
+            b = self.generate_weighted_number(input[i], length)
             stoch_num_list.append(b)
+        self.prob_bitsreams.append(stoch_num_list)
         return stoch_num_list
 
 
+class SngHandler:
+    def __init__(self, name):
+        self.name = name
+        self.wsng = WeightedStochasticNumberGenerator('wsng', 0.1)
+        self.msc_link = None
+
+    def generate(self, input, bit_length):
+        y_out = self.wsng.generate_stochastic_bitstream(input, bit_length)
+        return y_out
+
+
 def main():
-    sng = StochasticNumberGenerator('sng', 0.1, 10)
-    stoch_num_list = []
+    # sng = StochasticNumberGenerator('sng', 0.1, 10)
+    # stoch_num_list = []
+    # for i in range(0, 6):
+    #    stoch_num_list.append(sng.generate_stochastic_number(input[i]))
+
     input = [1, 0, 0, 1, 1, 1]
-    for i in range(0, 6):
-        stoch_num_list.append(sng.generate_stochastic_number(input[i]))
 
     wsng = WeightedStochasticNumberGenerator('wsng', 0.1)
-    i = wsng.generate_stochastic_bitstream(input)
+    i = wsng.generate_stochastic_bitstream(input, 20)
     print('wsng: ' + str(i))
 
 
