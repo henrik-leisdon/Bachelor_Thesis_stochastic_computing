@@ -25,6 +25,7 @@ def weight_gen(random_list):
     return [w_0, w_1, w_2, w_3]
 
 
+# ---------------------------------------------------------------------------------------------------
 class StochasticNumberGenerator:
     """simulates a stochastic number generator using a comperator
     @:param name: name of the generator
@@ -32,20 +33,19 @@ class StochasticNumberGenerator:
     @:param stream_length:  length of the bitstream
     @:param input: recieved input"""
 
-    def __init__(self, name, p_e, stream_length):
+    def __init__(self, name, p_e):
         self.name = name
         self.p_e = p_e
-        self.stream_length = stream_length
         self.prob_bitsreams = []
 
-    def generate_stochastic_number(self, input_bit):
+    def generate_stochastic_number(self, input_bit, stream_length):
         """generates (pseudo) stochastic bitstream
         @:param input_bit: bit to generate a bitstream for
         @:return: stochastic bistream for input bit"""
         bitstream = []
         probability = input_bit * (1 - self.p_e) + self.p_e * (1 - input_bit)
         frac = Fraction(Decimal(probability))
-        for i in range(0, self.stream_length):
+        for i in range(0, stream_length):
             r = random.randint(0, frac.denominator)
             if r < frac.numerator:
                 bitstream.append(1)
@@ -53,17 +53,18 @@ class StochasticNumberGenerator:
                 bitstream.append(0)
         return bitstream
 
-    def generate_stochastic_bitstream(self, input):
+    def generate_stochastic_bitstream(self, input, stream_length):
         """generate for every input bit a stochastic bitstream
         @:return: list of stochastic bitstreams"""
         stoch_num_list = []
         for i in range(0, 6):
-            b = self.generate_stochastic_number(input[i])
+            b = self.generate_stochastic_number(input[i], stream_length)
             stoch_num_list.append(b)
         self.prob_bitsreams.append(stoch_num_list)
         return stoch_num_list
 
 
+# ---------------------------------------------------------------------------------------------------
 class WeightedStochasticNumberGenerator:  # in probability y_i
     """generates a stochastic number with weighting the bits of the binary number"""
 
@@ -78,9 +79,9 @@ class WeightedStochasticNumberGenerator:  # in probability y_i
         for i in range(0, 4):
             r = random.randrange(0, 2)
             stochastic_number.append(r)
-        print(int("".join(str(i) for i in stochastic_number), 2))
+        # print(int("".join(str(i) for i in stochastic_number), 2))
         if int("".join(str(i) for i in stochastic_number), 2) > 10:
-            print('in if:' + str(int("".join(str(i) for i in stochastic_number), 2)))
+            # print('in if:' + str(int("".join(str(i) for i in stochastic_number), 2)))
             tau += 1
             if tau == 10:
                 return [0, 0, 0, 1]
@@ -104,8 +105,8 @@ class WeightedStochasticNumberGenerator:  # in probability y_i
         for i in range(0, length):
             random_list = WeightedStochasticNumberGenerator.init_sn(0)
             weight = weight_gen(random_list)
-            print('r: ' + str(random_list))
-            print('w: ' + str(weight))
+            # print('r: ' + str(random_list))
+            # print('w: ' + str(weight))
 
             n = weight[0] and binary_list[0] or weight[1] and binary_list[1] or \
                 weight[2] and binary_list[2] or weight[3] and binary_list[3]
@@ -128,19 +129,21 @@ class WeightedStochasticNumberGenerator:  # in probability y_i
         return stoch_num_list
 
 
+# ---------------------------------------------------------------------------------------------------
 class SngHandler:
-    def __init__(self, name):
+    def __init__(self, name, probability):
         self.name = name
-        self.wsng = WeightedStochasticNumberGenerator('wsng', 0.1)
+        self.wsng = StochasticNumberGenerator('wsng', probability)
         self.msc_link = None
 
-    def generate(self, input, bit_length):
+    def generate(self, data):
         """generate 6 random bitstreams
         @:param input: recieved message
         @:param bit_length: length of each bitstream (the larger, the more accurate)
         @:return: 6 n bit bitstreams"""
-        y_out = self.wsng.generate_stochastic_bitstream(input, bit_length)
-        return y_out
+        y = self.wsng.generate_stochastic_bitstream(data.x_in, data.bitlength)
+        data.y_in = y
+        return data
 
 
 # ---------------------------------------------------------------------------------------------------

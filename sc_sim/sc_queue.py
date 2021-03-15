@@ -1,3 +1,6 @@
+import SNG
+
+
 class Connection:
     """Input/connector for every gate"""
     def __init__(self, name):
@@ -13,9 +16,10 @@ class Connection:
 
 
 class Gate:
-    def __init__(self, name):
+    def __init__(self, name, monitor=0):
         self.name = name
         self.tau = 0
+        self.monitor = monitor
 
 
 class Gate2(Gate):
@@ -64,7 +68,8 @@ class Input(Gate):
 
 
 class Output(Gate):
-    def __init__(self, name):
+    def __init__(self, name, monitor=0):
+        self.monitor = monitor
         Gate.__init__(self, name)
         self.in_1 = Connection('in')
         self.value = None
@@ -73,7 +78,8 @@ class Output(Gate):
         return True
 
     def evaluate(self):
-        pass
+        if self.monitor:
+            print(str(self.name) + ' ' + str(self.value))
 
     def update(self):
         pass
@@ -143,6 +149,7 @@ class Update(Gate2):
             self.value = self.in_3.value
 
 
+# ---------------------------------------------------------------------------------------------------
 class Circuit(Gate):
     """Cirucit class, initilaize the circuit model"""
     def __init__(self, name):
@@ -155,7 +162,7 @@ class Circuit(Gate):
         self.y_4 = Input('y_4')
         self.y_5 = Input('y_5')
 
-        self.y_0_out = Output('y_0_out')
+        self.y_0_out = Output('y_0_out', monitor=1)
         self.y_1_out = Output('y_1_out')
         self.y_2_out = Output('y_2_out')
         self.y_3_out = Output('y_3_out')
@@ -197,7 +204,6 @@ class Circuit(Gate):
     def run_circuit(self, input):
         """run circuit
         @:param input: 1 input bit from every stocastic bitstream"""
-        print('run circuit')
         self.y_0.value = input[0]
         self.y_1.value = input[1]
         self.y_2.value = input[2]
@@ -208,51 +214,95 @@ class Circuit(Gate):
         while self.gate_list:
             gate = self.gate_list.pop(0)
             if gate.is_evaluatable:
-                print('in evaluatable')
+                # print('in evaluatable')
                 gate.evaluate()
-                print(gate.name + ' evaluated: ' + str(gate.value))
+                # print(gate.name + ' evaluated: ' + str(gate.value))
                 gate.update()
             else:
                 gate.tau += 1
                 if gate.tau < 5:
                     self.gate_list.append(gate)
 
-        print('end')
         y_out = []
         y_out.extend([self.y_0_out.value, self.y_1_out.value, self.y_2_out.value, self.y_3_out.value,
                       self.y_4_out.value, self.y_5_out.value])
         return y_out
 
 
+# ---------------------------------------------------------------------------------------------------
 class MscHandler:
     def __init__(self, name):
         self.name = name
         self.stb_link = None
-        self.sng_link = None
+        self.sng_link = None # SNG.SngHandler('sng', 0.1) #TMP!!! otherwise None
         self.sc = Circuit('sub_circuit_1')
         self.sc.generate()
+        self.y_in = []
+        self.y_out = [[], [], [], [], [], []]
+        self.clock = 0
 
-    def run_msc(self, input):
-        # needs to be extended to alternate between out and input as input
-        y_out = self.sc.run_circuit(input)
-
-    def msc_to_sng(self, input, bitlength):
+    def msc_to_sng(self, data):
         """request n bits from the sng to compute and return
             y_in = 6 n bit bitstreams"""
-        # TODO: parser from bitream to bit and append bit to bitstream
+        self.y_out = [[], [], [], [], [], []]
 
-        y_in = self.sng_link.generate(input, bitlength)
-        #parse
-        y_out = self.sc.run_circuit(y_in)
-        # append y_out to bitsream of STB
-        return y_out
+        if data.tau == 0:
+            data = self.sng_link.generate(data)
+            self.y_in = data.y_in
+            print('y gen: ' + str(self.y_in))
+        else:
+            self.y_in = data.y_out
+            print('y reuse: ' + str(self.y_in))
+
+        y_out_tmp = []
+        for i in range(0, data.bitlength):
+            y_in = self.parse_y_in()
+            # print('y_in' + str(y_in))
+            y_out = self.sc.run_circuit(y_in)
+            self.append_y_out(y_out)
+            # print(y_out)
+
+            """
+            if self.clock == 0:
+                y_in = self.parse_y_in()
+                y_out = self.sc.run_circuit(y_in)
+                self.append_y_out(y_out)
+                y_out_tmp = y_out
+                self.clock = 1
+            else:
+                y_out = self.sc.run_circuit(y_out_tmp)
+                self.append_y_out(y_out)
+                y_out_tmp = y_out
+                self.clock = 0
+            """
+        data.y_out = self.y_out
+        print('y_out' + str(self.y_out))
+
+        return data
+
+    def parse_y_in(self):
+        """parse from the n bit bitstream one bit for each y variable (sc just can handle 1 bit)"""
+        sc_bit_list = [self.y_in[0].pop(0), self.y_in[1].pop(0), self.y_in[2].pop(0), self.y_in[3].pop(0),
+                       self.y_in[4].pop(0), self.y_in[5].pop(0)]
+        return sc_bit_list
+
+    def append_y_out(self, y_out):
+        self.y_out[0].append(y_out[0])
+        self.y_out[1].append(y_out[1])
+        self.y_out[2].append(y_out[2])
+        self.y_out[3].append(y_out[3])
+        self.y_out[4].append(y_out[4])
+        self.y_out[5].append(y_out[5])
 
 
+# ---------------------------------------------------------------------------------------------------
 def main():
-    c = Circuit('c')
-    c.generate()
-    y = c.run_circuit([1, 0, 0, 1, 1, 1])
-    print(y)
+    # print(m.msc_to_sng([0, 0, 0, 1, 1, 1], 10))
+    sc = Circuit('sub_circuit_1')
+    sc.generate()
+    y_in = [1, 1, 0, 1, 1, 0]
+    i = sc.run_circuit(y_in)
+    print(i)
 
 
 if __name__ == '__main__':

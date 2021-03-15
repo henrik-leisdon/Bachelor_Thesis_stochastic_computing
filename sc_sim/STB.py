@@ -18,11 +18,6 @@ def prob_round(probability):
         return -1
 
 
-def parse_msc_to_stb(y_out):
-    i = 1
-    print(i)
-
-
 class StochToBin:
     def __init__(self, name):
         self.name = name
@@ -30,11 +25,12 @@ class StochToBin:
         self.x_out = []
         self.msc_link = None
 
-    def convert(self):
+    def convert(self, prob_bitstream):
+        self.x_out = []
         """convert bitstream to probability and rounds it to 1 or 0"""
-        for y in range(0, len(self.prob_bitstream)):
+        for y in range(0, len(prob_bitstream)):
             one_counter = 0
-            stream = self.prob_bitstream[y]
+            stream = prob_bitstream[y]
             for bit in range(0, len(stream)):
 
                 if stream[bit] == 1:
@@ -42,9 +38,15 @@ class StochToBin:
 
             self.x_out.append(prob_round(one_counter / len(stream)))
 
-    def request_bits(self, input, bitlength):
-        y_out = self.msc_link.msc_to_sng(input, bitlength)
-        self.convert()
+    def request_bits(self, data):
+        self.x_out = []
+        data = self.msc_link.msc_to_sng(data)
+        self.convert(data.y_out)
+        print('converted x: ' + str(self.x_out))
+
+        data.x_out = self.x_out
+
+        return data
 
 
 # call_from_stb(20) bits
@@ -53,11 +55,14 @@ class StochToBin:
 
 
 def main():
-    s = StochToBin('stb')
-    s.prob_bitstream = [[0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-                        [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], [1, 1, 0, 0, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 1, 1]]
+    # s = StochToBin('stb')
+    # s.prob_bitstream = [[0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    #                    [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], [1, 1, 0, 0, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 1, 1]]
 
-    s.convert()
+    # s.convert()
+    # print(s.x_out)
+    s = StochToBin('stb')
+    s.request_bits([1, 0, 0, 1, 1, 1], 10)
     print(s.x_out)
 
 
