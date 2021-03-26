@@ -7,6 +7,4 @@ class Data:
         self.y_out = [[], [], [], [], [], []]
         self.bitlength = 0
         self.tau = 0
-
-    def set(self, y_in):
-        self.y_in = y_in
+        self.generation_method = 0

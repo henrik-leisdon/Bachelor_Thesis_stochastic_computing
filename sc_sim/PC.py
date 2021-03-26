@@ -14,7 +14,6 @@ class ParityCheck:
     @staticmethod
     def parity_check(x_output):
         """checks if parity of the output is 0"""
-        # print('x_out: ' + str(x_output))
         parity = True
         for i in x_output:
             if i == -1:

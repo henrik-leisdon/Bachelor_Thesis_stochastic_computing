@@ -3,6 +3,7 @@ import SNG
 
 class Connection:
     """Input/connector for every gate"""
+
     def __init__(self, name):
         self.name = name
         self.value = None
@@ -20,6 +21,51 @@ class Gate:
         self.name = name
         self.tau = 0
         self.monitor = monitor
+
+
+class Input(Gate):
+    def __init__(self, name):
+        Gate.__init__(self, name)
+        self.value = None
+        self.connection = []
+
+    def set_input(self, input):
+        self.value = input
+
+    def is_evaluatable(self):
+        return True
+
+    def evaluate(self):
+        pass
+
+    def update(self):
+        if self.value is not None:
+            for con in self.connection:
+                con.value = self.value
+
+    def connect(self, connections):
+        if not isinstance(connections, list):
+            connections = [connections]
+        for con in connections:
+            self.connection.append(con)
+
+
+class Output(Gate):
+    def __init__(self, name, monitor=0):
+        Gate.__init__(self, name)
+        self.monitor = monitor
+        self.in_1 = Connection('in')
+        self.value = None
+
+    def is_evaluatable(self):
+        return True
+
+    def evaluate(self):
+        if self.monitor == 1:
+            print(str(self.name) + ' ' + str(self.value))
+
+    def update(self):
+        pass
 
 
 class Gate2(Gate):
@@ -40,49 +86,7 @@ class Gate2(Gate):
             self.connection.append(con)
 
 
-class Input(Gate):
-    def __init__(self, name):
-        Gate.__init__(self, name)
-        self.value = None
-        self.connection = []
 
-    def set_input(self, input):
-        self.value = input
-
-    def is_evaluatable(self):
-        return True
-
-    def evaluate(self):
-            pass
-
-    def update(self):
-        if self.value is not None:
-            for con in self.connection:
-                con.value = self.value
-
-    def connect(self, connections):
-        if not isinstance(connections, list):
-            connections = [connections]
-        for con in connections:
-            self.connection.append(con)
-
-
-class Output(Gate):
-    def __init__(self, name, monitor=0):
-        self.monitor = monitor
-        Gate.__init__(self, name)
-        self.in_1 = Connection('in')
-        self.value = None
-
-    def is_evaluatable(self):
-        return True
-
-    def evaluate(self):
-        if self.monitor:
-            print(str(self.name) + ' ' + str(self.value))
-
-    def update(self):
-        pass
 
 
 class XOR(Gate2):
@@ -98,16 +102,18 @@ class XOR(Gate2):
             return True
 
     def evaluate(self):
-        print('xor evaluate ' + str(self.in_1.value))
+        tmp_val = self.value
         if self.in_1.value == 1 and self.in_2.value == 0 or self.in_1.value == 0 and self.in_2.value == 1:
             self.value = 1
         else:
             self.value = 0
+        if self.monitor == 1 and tmp_val != self.value:
+            print(str(self.name) + ' ' + str(self.value))
 
 
-class AND(Gate):
+class AND(Gate2):
     def __init__(self, name):
-        Gate.__init__(self, name)
+        Gate2.__init__(self, name)
         self.value = None
         self.in_1 = Connection('in_1')
         self.in_2 = Connection('in_2')
@@ -119,12 +125,15 @@ class AND(Gate):
             return True
 
     def evaluate(self):
+        tmp_val = self.value
         if self.in_1.value == 0 or self.in_2.value == 0:
             self.value = 0
         elif self.in_1.value == 1 and self.in_2.value == 1:
             self.value = 1
         else:
             self.value = 0
+        if self.monitor == 1 and tmp_val != self.value:
+            print(str(self.name) + ' ' + str(self.value))
 
 
 class Update(Gate2):
@@ -141,6 +150,7 @@ class Update(Gate2):
             return True
 
     def evaluate(self):
+        tmp_val = self.value
         if self.in_1.value == 1 and self.in_2.value == 1:
             self.value = 1
         elif self.in_1.value == 0 and self.in_2.value == 0:
@@ -148,10 +158,14 @@ class Update(Gate2):
         else:
             self.value = self.in_3.value
 
+        if self.monitor == 1 and tmp_val != self.value:
+            print(str(self.name) + ' ' + str(self.value))
+
 
 # ---------------------------------------------------------------------------------------------------
 class Circuit(Gate):
     """Cirucit class, initilaize the circuit model"""
+
     def __init__(self, name):
         Gate.__init__(self, name)
         self.gate_list = []
@@ -163,11 +177,11 @@ class Circuit(Gate):
         self.y_5 = Input('y_5')
 
         self.y_0_out = Output('y_0_out', monitor=1)
-        self.y_1_out = Output('y_1_out')
-        self.y_2_out = Output('y_2_out')
-        self.y_3_out = Output('y_3_out')
-        self.y_4_out = Output('y_4_out')
-        self.y_5_out = Output('y_5_out')
+        self.y_1_out = Output('y_1_out', monitor=1)
+        self.y_2_out = Output('y_2_out', monitor=1)
+        self.y_3_out = Output('y_3_out', monitor=1)
+        self.y_4_out = Output('y_4_out', monitor=1)
+        self.y_5_out = Output('y_5_out', monitor=1)
 
     def generate(self):
         print('circuit initialized')
@@ -182,7 +196,7 @@ class Circuit(Gate):
         update_2 = Update('Update_2')
 
         self.y_0.connect([xor_1.in_1, xor_2.in_1, update_0.in_3, self.y_4_out])
-        self.y_1.connect([update_2.in_2, self.y_5_out,update_1.in_3])
+        self.y_1.connect([update_2.in_2, self.y_5_out, update_1.in_3])
         self.y_2.connect([xor_0.in_1, update_1.in_1, xor_2.in_2, update_2.in_3])
         self.y_3.connect([xor_0.in_2, xor_1.in_2])
         self.y_4.connect([update_0.in_2])
@@ -214,10 +228,9 @@ class Circuit(Gate):
         while self.gate_list:
             gate = self.gate_list.pop(0)
             if gate.is_evaluatable:
-                # print('in evaluatable')
                 gate.evaluate()
-                # print(gate.name + ' evaluated: ' + str(gate.value))
                 gate.update()
+
             else:
                 gate.tau += 1
                 if gate.tau < 5:
@@ -234,7 +247,7 @@ class MscHandler:
     def __init__(self, name):
         self.name = name
         self.stb_link = None
-        self.sng_link = None # SNG.SngHandler('sng', 0.1) #TMP!!! otherwise None
+        self.sng_link = None
         self.sc = Circuit('sub_circuit_1')
         self.sc.generate()
         self.y_in = []
@@ -256,13 +269,7 @@ class MscHandler:
 
         y_out_tmp = []
         for i in range(0, data.bitlength):
-            y_in = self.parse_y_in()
-            # print('y_in' + str(y_in))
-            y_out = self.sc.run_circuit(y_in)
-            self.append_y_out(y_out)
-            # print(y_out)
 
-            """
             if self.clock == 0:
                 y_in = self.parse_y_in()
                 y_out = self.sc.run_circuit(y_in)
@@ -274,7 +281,7 @@ class MscHandler:
                 self.append_y_out(y_out)
                 y_out_tmp = y_out
                 self.clock = 0
-            """
+
         data.y_out = self.y_out
         print('y_out' + str(self.y_out))
 

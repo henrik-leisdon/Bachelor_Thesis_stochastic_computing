@@ -31,8 +31,8 @@ class StochToBin:
         for y in range(0, len(prob_bitstream)):
             one_counter = 0
             stream = prob_bitstream[y]
-            for bit in range(0, len(stream)):
 
+            for bit in range(0, len(stream)):
                 if stream[bit] == 1:
                     one_counter += 1
 
@@ -42,27 +42,17 @@ class StochToBin:
         self.x_out = []
         data = self.msc_link.msc_to_sng(data)
         self.convert(data.y_out)
-        print('converted x: ' + str(self.x_out))
 
         data.x_out = self.x_out
 
+        print('converted x: ' + str(self.x_out))
         return data
 
 
-# call_from_stb(20) bits
-# link to main_stochastic_core
-#
-
-
 def main():
-    # s = StochToBin('stb')
-    # s.prob_bitstream = [[0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    #                    [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], [1, 1, 0, 0, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 1, 1]]
-
-    # s.convert()
-    # print(s.x_out)
     s = StochToBin('stb')
-    s.request_bits([1, 0, 0, 1, 1, 1], 10)
+    # needs to be of type data
+    s.request_bits([1, 0, 0, 1, 1, 1])
     print(s.x_out)
 
 
