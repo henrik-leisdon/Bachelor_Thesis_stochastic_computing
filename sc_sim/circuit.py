@@ -18,6 +18,7 @@ def main():
 
     parity = False
     i = 0
+
     threshold = 10
     while parity == False and i < threshold:
         print('yin = ' + str(y_in))
