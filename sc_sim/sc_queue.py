@@ -1,4 +1,5 @@
-import SNG
+# import SNG
+import copy
 
 
 class Connection:
@@ -176,12 +177,12 @@ class Circuit(Gate):
         self.y_4 = Input('y_4')
         self.y_5 = Input('y_5')
 
-        self.y_0_out = Output('y_0_out', monitor=1)
-        self.y_1_out = Output('y_1_out', monitor=1)
-        self.y_2_out = Output('y_2_out', monitor=1)
-        self.y_3_out = Output('y_3_out', monitor=1)
-        self.y_4_out = Output('y_4_out', monitor=1)
-        self.y_5_out = Output('y_5_out', monitor=1)
+        self.y_0_out = Output('y_0_out', monitor=0)
+        self.y_1_out = Output('y_1_out', monitor=0)
+        self.y_2_out = Output('y_2_out', monitor=0)
+        self.y_3_out = Output('y_3_out', monitor=0)
+        self.y_4_out = Output('y_4_out', monitor=0)
+        self.y_5_out = Output('y_5_out', monitor=0)
 
     def generate(self):
         print('circuit initialized')
@@ -261,36 +262,41 @@ class MscHandler:
 
         if data.tau == 0:
             data = self.sng_link.generate(data)
-            self.y_in = data.y_in
-            print('y gen: ' + str(self.y_in))
+            self.y_in = copy.deepcopy(data.y_in)
+
+            # print('y gen: ' + str(self.y_in))
         else:
-            self.y_in = data.y_out
-            print('y reuse: ' + str(self.y_in))
+            self.y_in = data.y_out.copy()
+            # print('y reuse: ' + str(self.y_in))
 
         y_out_tmp = []
+        # data.to_String()
+
         for i in range(0, data.bitlength):
 
             if self.clock == 0:
-                y_in = self.parse_y_in()
-                y_out = self.sc.run_circuit(y_in)
+                bit_y_in = self.parse_y_in(self.y_in)
+                y_out = self.sc.run_circuit(bit_y_in)
                 self.append_y_out(y_out)
-                y_out_tmp = y_out
+                y_out_tmp = y_out.copy()
                 self.clock = 1
             else:
                 y_out = self.sc.run_circuit(y_out_tmp)
                 self.append_y_out(y_out)
-                y_out_tmp = y_out
+                y_out_tmp = y_out.copy
                 self.clock = 0
 
-        data.y_out = self.y_out
-        print('y_out' + str(self.y_out))
+        data.y_out = self.y_out.copy()
+        # print('y_out' + str(self.y_out))
+        # print('y_in ' + str(data.y_in))
+        # data.to_String()
 
         return data
 
-    def parse_y_in(self):
+    def parse_y_in(self, y_in):
         """parse from the n bit bitstream one bit for each y variable (sc just can handle 1 bit)"""
-        sc_bit_list = [self.y_in[0].pop(0), self.y_in[1].pop(0), self.y_in[2].pop(0), self.y_in[3].pop(0),
-                       self.y_in[4].pop(0), self.y_in[5].pop(0)]
+        sc_bit_list = [y_in[0].pop(0), y_in[1].pop(0), y_in[2].pop(0), y_in[3].pop(0),
+                       y_in[4].pop(0), y_in[5].pop(0)]
         return sc_bit_list
 
     def append_y_out(self, y_out):

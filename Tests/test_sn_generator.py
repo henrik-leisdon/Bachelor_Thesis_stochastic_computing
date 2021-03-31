@@ -1,13 +1,15 @@
-import math
-
 from sc_sim import SNG
 from sc_sim import PC
 from sc_sim import STB
 from sc_sim import sc_queue
 from sc_sim import Data
 
+import math
+import time
+
 
 def test_compare(probability, bit_length, test_size, tolerance):
+    """generate 10/100/1000 n bit strings and test if the result is in the error tolerance"""
     # sng_compare
     print('1s:')
 
@@ -27,6 +29,7 @@ def test_compare(probability, bit_length, test_size, tolerance):
     print('number of errors:' + str(error_number))
     print('error frequency: ' + str(error_number / test_size))
 
+    """---------------- ZEROS------------------------- """
     print('\n0s:')
     # sng_c = SNG.SngScale('sng_c', probability)
     error_number = 0
@@ -67,6 +70,7 @@ def test_scale(probability, bit_length, test_size, tolerance):
     print('number of errors:' + str(error_number))
     print('error frequency: ' + str(error_number / test_size))
 
+    """---------------- ZEROS------------------------- """
     print('\n0s:')
     error_number = 0
     for i in range(0, test_size):
@@ -77,7 +81,7 @@ def test_scale(probability, bit_length, test_size, tolerance):
             if bit == 1:
                 bit_count += 1
         pr = bit_count / bit_length
-        # print(str(sn) + ' ' + str(pr))
+        print(str(sn) + ' ' + str(pr))
         equal = pr < 0.1  #math.isclose(probability, pr, rel_tol=tolerance+0.2)
         if not equal:
             error_number += 1
@@ -106,24 +110,58 @@ class TestPipeline:
 
     def pipeline(self, input, bitlength, tau):
 
-        self.data.generation_method = 1
+        self.data.generation_method = 0
         self.data.x_in = input
         self.data.bitlength = bitlength
         self.data.tau = tau
         self.data = self.stb.request_bits(self.data)
         self.output.extend(self.data.y_out)
-        return self.pc.parity_check(self.data.x_out)
+        # print(self.data.x_out)
+        # print(self.pc.parity_check(self.data.x_out))
+        # return self.pc.parity_check(self.data.x_out)
 
-    def run(self):
-
-        for i in range(0, 10):
+    def run(self, input, bitlength, probability):
+        fail_count = 0
+        error_rate = 0
+        for i in range(0, 100):
+            time.sleep(0.01)
+            self.pipeline(input, bitlength, 0)
+            time.sleep(0.1)
+            print(self.data.y_in)
+            print(self.data.y_out)
+            print(self.data.x_out)
+            parity = self.pc.parity_check(self.data.x_out)
+            print(parity)
             y_in = self.data.y_in
+
+            if parity == False:
+                fail_count += 1
+                it = 0
+
+                for inputs in y_in:
+
+                    rate = 0
+
+                    for bits in inputs:
+                        if bits == 1:
+                            rate += 1
+
+                    pr = rate/len(inputs)
+
+                    prob = self.data.x_in[it] * (1 - probability) + probability * (1 - self.data.x_in[it])
+                    # print(prob)
+                    if pr != prob:
+                        error_rate += 1
+                    it += 1
+
+        print('fail count:' + str(fail_count))
+        print('error rate in fails:' + str(error_rate))
+
             # count bits, get probability
             # if pr = x_in * (1 - self.p_e) + self.p_e * (1 - input_x)
 
 
-
-def main():
+def test1():
     print('compare')
     test_compare(0.1, 10, 1000, 0.1)
     print('-----------------------------------------------')
@@ -140,9 +178,13 @@ def main():
     test_scale(0.1, 1000, 1000, 0.1)
     print('-----------------------------------------------')
 
+
+def test2():
     p = TestPipeline()
-    s = p.pipeline([1, 0, 0, 1, 1, 1], 1000, 0)
+    p.run([1, 0, 0, 1, 1, 1], 10, 0.1)
 
 
 if __name__ == '__main__':
-    main()
+    # test1()
+    test2()
+

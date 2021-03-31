@@ -27,5 +27,18 @@ class ParityCheck:
             parity = False
         if x_or(x_output[1], x_output[5]) != 0:
             parity = False
-        print(parity)
+        # print(parity)
         return parity
+
+
+def main():
+    pc = ParityCheck
+    for i in range(0,100):
+        par = pc.parity_check([1, 0, 0, 1, 1, 0])
+        print(par)
+        # if par == False:
+        #    print('fail')
+
+
+if __name__ == '__main__':
+    main()

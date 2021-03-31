@@ -45,7 +45,7 @@ class StochToBin:
 
         data.x_out = self.x_out
 
-        print('converted x: ' + str(self.x_out))
+        # print('converted x: ' + str(self.x_out))
         return data
 
 
