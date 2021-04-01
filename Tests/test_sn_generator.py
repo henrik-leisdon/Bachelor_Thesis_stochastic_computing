@@ -1,8 +1,8 @@
-from sc_sim import SNG
-from sc_sim import PC
-from sc_sim import STB
-from sc_sim import sc_queue
-from sc_sim import Data
+from LDPC_sim import SNG
+from LDPC_sim import PC
+from LDPC_sim import STB
+from LDPC_sim import sc_queue
+from LDPC_sim import Data
 
 import math
 import time
