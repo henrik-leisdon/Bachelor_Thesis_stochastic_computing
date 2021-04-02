@@ -1,3 +1,5 @@
+import copy
+
 import SNG
 import PC
 import STB
@@ -37,25 +39,34 @@ class Pipeline:
 
             # print('y in while: ' + str(self.data.y_out))
             self.data = self.stb.request_bits(self.data)
-            self.output.extend(self.data.y_out)
+            self.append_y_out(copy.deepcopy(self.data.y_out))
 
             if self.data.y_out == prev_data.y_out:
                 print('in if')
                 data = self.sng.generate(self.data)
-                self.data.y_out = data.y_in
 
             tau += 1
 
-        self.stb.convert(self.output)
+        output = self.stb.convert(self.output)
+        print(output)
         print(' ')
-        print(self.output)
+        print('{}, {}'.format(len(self.output[0]), self.output))
         print(self.stb.x_out)
         print('---------------------------------------------------')
+
+    def append_y_out(self, y_out):
+        while len(y_out[0]) > 0:
+            self.output[0].append(y_out[0].pop(0))
+            self.output[1].append(y_out[1].pop(0))
+            self.output[2].append(y_out[2].pop(0))
+            self.output[3].append(y_out[3].pop(0))
+            self.output[4].append(y_out[4].pop(0))
+            self.output[5].append(y_out[5].pop(0))
 
 
 def main():
     p = Pipeline()
-    p.pipeline([1, 0, 0, 1, 1, 1], 1000, 0)
+    p.pipeline([1, 0, 0, 1, 1, 1], 10, 0)
 
 
 if __name__ == '__main__':

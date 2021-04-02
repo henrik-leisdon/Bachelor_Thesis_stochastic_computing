@@ -21,7 +21,6 @@ def prob_round(probability):
 class StochToBin:
     def __init__(self, name):
         self.name = name
-        self.prob_bitstream = [[], [], [], [], [], []]
         self.x_out = []
         self.msc_link = None
 
@@ -37,6 +36,7 @@ class StochToBin:
                     one_counter += 1
 
             self.x_out.append(prob_round(one_counter / len(stream)))
+        return self.x_out
 
     def request_bits(self, data):
         self.x_out = []

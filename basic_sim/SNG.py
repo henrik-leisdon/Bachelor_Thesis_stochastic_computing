@@ -32,15 +32,15 @@ class Sng:
         self.p_e = p_e
         self.prob_bitsreams = []
 
-    def gen_bit(self, input_bit, stream_length):
+    def gen_bitstream(self, input_bit, stream_length):
         pass
 
-    def gen_stream(self, input, length):
+    def gen_streamlist(self, input, length):
         """generate for every input bit a stochastic bitstream
         @:return: list of stochastic bitstreams"""
         stoch_num_list = []
         for i in range(0, 6):
-            b = self.gen_bit(input[i], length)
+            b = self.gen_bitstream(input[i], length)
             stoch_num_list.append(b)
         self.prob_bitsreams.append(stoch_num_list)
         return stoch_num_list
@@ -56,7 +56,7 @@ class SngCompare(Sng):
     def __init__(self, name, p_e):
         Sng.__init__(self, name, p_e)
 
-    def gen_bit(self, input_bit, stream_length):
+    def gen_bitstream(self, input_bit, stream_length):
         """generates (pseudo) stochastic bitstream
         @:param input_bit: bit to generate a bitstream for
         @:return: stochastic bistream for input bit"""
@@ -95,7 +95,7 @@ class SngScale(Sng):  # in probability y_i
 
         return stochastic_number
 
-    def gen_bit(self, input_x, length):
+    def gen_bitstream(self, input_x, length):
         """generates (pseudo) stochastic bitstream with weights
         @:param input_bit: bit to generate a bitstream for
         @:return: stochastic bistream for input bit"""
@@ -140,10 +140,10 @@ class SngHandler:
 
         if data.generation_method == 0:
             sng_c = SngCompare('sng_c', self.probability)
-            data.y_in = sng_c.gen_stream(data.x_in, data.bitlength)
+            data.y_in = sng_c.gen_streamlist(data.x_in, data.bitlength)
         else:
             sng_s = SngScale('sng_s', self.probability)
-            data.y_in = sng_s.gen_stream(data.x_in, data.bitlength)
+            data.y_in = sng_s.gen_streamlist(data.x_in, data.bitlength)
 
         return data
 
@@ -154,7 +154,7 @@ def main():
     """Main method for testing, DON'T DELETE"""
     input = [1, 0, 0, 1, 1, 1]
     wsng = SngScale('wsng', 0.1)
-    i = wsng.gen_stream(input, 20)
+    i = wsng.gen_streamlist(input, 20)
     print('wsng: ' + str(i))
     print(weight_gen([1, 0, 1, 0]))
 
