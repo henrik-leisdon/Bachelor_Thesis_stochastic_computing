@@ -126,7 +126,6 @@ class TestPipeline:
         for i in range(0, 100):
             time.sleep(0.01)
             self.pipeline(input, bitlength, 0)
-            time.sleep(0.1)
             print(self.data.y_in)
             print(self.data.y_out)
             print(self.data.x_out)
@@ -180,11 +179,13 @@ def test1():
 
 
 def test2():
+
+
     p = TestPipeline()
     p.run([1, 0, 0, 1, 1, 1], 10, 0.1)
 
 
 if __name__ == '__main__':
     # test1()
-    test1()
+    test2()
 

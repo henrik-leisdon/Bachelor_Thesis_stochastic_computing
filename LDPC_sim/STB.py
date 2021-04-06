@@ -26,6 +26,7 @@ class StochToBin:
 
     def convert(self, prob_bitstream):
         self.x_out = []
+        print(self.x_out)
         """convert bitstream to probability and rounds it to 1 or 0"""
         for y in range(0, len(prob_bitstream)):
             one_counter = 0
@@ -39,7 +40,7 @@ class StochToBin:
         return self.x_out
 
     def request_bits(self, data):
-        self.x_out = []
+        #self.x_out = []
         data = self.msc_link.msc_to_sng(data)
         self.convert(data.y_out)
 

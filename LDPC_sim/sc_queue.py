@@ -263,8 +263,8 @@ class MscHandler:
         if data.tau == 0:
             data = self.sng_link.generate(data)
             self.y_in = copy.deepcopy(data.y_in)
+            print('y gen: ' + str(self.y_in))
 
-            # print('y gen: ' + str(self.y_in))
         else:
             self.y_in = data.y_out.copy()
             # print('y reuse: ' + str(self.y_in))
@@ -309,13 +309,23 @@ class MscHandler:
 
 
 # ---------------------------------------------------------------------------------------------------
+def parse_y_in(y_in):
+    """parse from the n bit bitstream one bit for each y variable (sc just can handle 1 bit)"""
+    sc_bit_list = [y_in[0].pop(0), y_in[1].pop(0), y_in[2].pop(0), y_in[3].pop(0),
+                   y_in[4].pop(0), y_in[5].pop(0)]
+    return sc_bit_list
+
+
 def main():
     # print(m.msc_to_sng([0, 0, 0, 1, 1, 1], 10))
     sc = Circuit('sub_circuit_1')
     sc.generate()
-    y_in = [1, 1, 0, 1, 1, 0]
-    i = sc.run_circuit(y_in)
-    print(i)
+
+    y_in = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [1, 1, 1, 0, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 0, 1, 1, 1, 1, 1, 1, 0, 1]]
+    while len(y_in[0]) > 0:
+        y = parse_y_in(y_in)
+        i = sc.run_circuit(y)
+        print('{}'.format(i))
 
 
 if __name__ == '__main__':

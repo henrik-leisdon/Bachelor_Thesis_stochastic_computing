@@ -34,17 +34,20 @@ class Pipeline:
         # print(self.pc.parity_check(self.data.x_out))
 
         while tau < 5 and self.pc.parity_check(self.data.x_out) == False:
-            self.data.tau += 1
+            self.data.tau += 0
             prev_data = self.data
 
             # print('y in while: ' + str(self.data.y_out))
             self.data = self.stb.request_bits(self.data)
+
             self.append_y_out(copy.deepcopy(self.data.y_out))
 
             if self.data.y_out == prev_data.y_out:
                 print('in if')
-                data = self.sng.generate(self.data)
 
+                data = self.sng.generate(self.data)
+                self.data.y_in = data.y_in
+            print('x_out {}'.format(self.data.x_out))
             tau += 1
 
         output = self.stb.convert(self.output)
