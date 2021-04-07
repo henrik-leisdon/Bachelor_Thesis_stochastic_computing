@@ -101,7 +101,7 @@ class TestPipeline:
         self.stb = STB.StochToBin('stb')
         self.pc = PC.ParityCheck('pc')
         self.data = Data.Data('data')
-        self.output = []
+        # self.output = []
 
         # link
         self.stb.msc_link = self.msc
@@ -115,19 +115,16 @@ class TestPipeline:
         self.data.bitlength = bitlength
         self.data.tau = tau
         self.data = self.stb.request_bits(self.data)
-        self.output.extend(self.data.y_out)
-        # print(self.data.x_out)
-        # print(self.pc.parity_check(self.data.x_out))
-        # return self.pc.parity_check(self.data.x_out)
 
     def run(self, input, bitlength, probability):
         fail_count = 0
         error_rate = 0
-        for i in range(0, 100):
+        for i in range(0, 5):
             time.sleep(0.01)
+            self.data.reset()
             self.pipeline(input, bitlength, 0)
-            print(self.data.y_in)
-            print(self.data.y_out)
+            # print(self.data.y_in)
+            # print(self.data.y_out)
             print(self.data.x_out)
             parity = self.pc.parity_check(self.data.x_out)
             print(parity)

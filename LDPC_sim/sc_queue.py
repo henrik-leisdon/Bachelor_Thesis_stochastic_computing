@@ -68,7 +68,6 @@ class Output(Gate):
     def update(self):
         pass
 
-
 class Gate2(Gate):
     def __init__(self, name):
         Gate.__init__(self, name)
@@ -170,6 +169,7 @@ class Circuit(Gate):
     def __init__(self, name):
         Gate.__init__(self, name)
         self.gate_list = []
+        self.full_list = []
         self.y_0 = Input('y_0')
         self.y_1 = Input('y_1')
         self.y_2 = Input('y_2')
@@ -215,6 +215,7 @@ class Circuit(Gate):
         self.gate_list.extend([self.y_1, self.y_2, self.y_3, self.y_4, self.y_5, xor_0, xor_1, xor_2, update_0,
                                update_1, update_2, self.y_0_out, self.y_1_out, self.y_2_out, self.y_3_out,
                                self.y_4_out, self.y_5_out])
+        self.full_list = copy.deepcopy(self.gate_list)
 
     def run_circuit(self, input):
         """run circuit
@@ -240,6 +241,7 @@ class Circuit(Gate):
         y_out = []
         y_out.extend([self.y_0_out.value, self.y_1_out.value, self.y_2_out.value, self.y_3_out.value,
                       self.y_4_out.value, self.y_5_out.value])
+        print('cir y_out {}'.format(y_out))
         return y_out
 
 
@@ -267,14 +269,18 @@ class MscHandler:
 
         else:
             self.y_in = data.y_out.copy()
-            # print('y reuse: ' + str(self.y_in))
-
-        y_out_tmp = []
-        # data.to_String()
 
         for i in range(0, data.bitlength):
+            self.sc.generate()
+            bit_y_in = self.parse_y_in(self.y_in)
+            print('for y_in  {}'.format(bit_y_in))
+            y_out = []
+            y_out = self.sc.run_circuit(bit_y_in)
+            print('for y_out {}'.format(y_out))
+            print('---')
+            self.append_y_out(y_out)
 
-            if self.clock == 0:
+            """if self.clock == 0:
                 bit_y_in = self.parse_y_in(self.y_in)
                 y_out = self.sc.run_circuit(bit_y_in)
                 self.append_y_out(y_out)
@@ -284,12 +290,10 @@ class MscHandler:
                 y_out = self.sc.run_circuit(y_out_tmp)
                 self.append_y_out(y_out)
                 y_out_tmp = y_out.copy
-                self.clock = 0
+                self.clock = 0"""
 
         data.y_out = self.y_out.copy()
-        # print('y_out' + str(self.y_out))
-        # print('y_in ' + str(data.y_in))
-        # data.to_String()
+        data.to_String()
 
         return data
 
@@ -320,12 +324,13 @@ def main():
     # print(m.msc_to_sng([0, 0, 0, 1, 1, 1], 10))
     sc = Circuit('sub_circuit_1')
     sc.generate()
+    sc.run_circuit([1, 0, 0, 1, 1, 1])
 
-    y_in = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [1, 1, 1, 0, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 0, 1, 1, 1, 1, 1, 1, 0, 1]]
-    while len(y_in[0]) > 0:
-        y = parse_y_in(y_in)
-        i = sc.run_circuit(y)
-        print('{}'.format(i))
+    # y_in = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+    # while len(y_in[0]) > 0:
+    #    y = parse_y_in(y_in)
+    #    i = sc.run_circuit(y)
+    #    print('{}'.format(i))
 
 
 if __name__ == '__main__':

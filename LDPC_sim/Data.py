@@ -13,3 +13,8 @@ class Data:
         print(str(self.name) + ' x_in:' + str(self.x_in) + '\nx_out: ' + str(self.x_out))
         print('y_in:' + str(self.y_in) + '\ny_out: ' + str(self.y_out))
         print(' ')
+
+    def reset(self):
+        self.y_in = [[], [], [], [], [], []]
+        self.x_out = []
+        self.y_out = [[], [], [], [], [], []]
