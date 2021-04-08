@@ -265,7 +265,6 @@ class MscHandler:
         if data.tau == 0:
             data = self.sng_link.generate(data)
             self.y_in = copy.deepcopy(data.y_in)
-            print('y gen: ' + str(self.y_in))
 
         else:
             self.y_in = data.y_out.copy()
@@ -273,11 +272,7 @@ class MscHandler:
         for i in range(0, data.bitlength):
             self.sc.generate()
             bit_y_in = self.parse_y_in(self.y_in)
-            print('for y_in  {}'.format(bit_y_in))
-            y_out = []
             y_out = self.sc.run_circuit(bit_y_in)
-            print('for y_out {}'.format(y_out))
-            print('---')
             self.append_y_out(y_out)
 
             """if self.clock == 0:
