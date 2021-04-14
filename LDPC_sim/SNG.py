@@ -14,6 +14,16 @@ def bit_not(a):
         return 1
 
 
+def gen_rand(denominator, pr):
+    r = 16
+    it = 0
+    while r > denominator and it < 30:
+        r = random.randint(0, 15)
+    if r > denominator:
+        r = int(pr)
+    return r
+
+
 def weight_gen(random_list):
     """weight generator for weighted SNG (16 bit)
     @:param random_list: list of random bits
@@ -125,6 +135,27 @@ class SngScale(Sng):  # in probability y_i
         return stochastic_number
 
 
+class SNGCompare2(Sng):
+    def __init__(self, name, p_e):
+        Sng.__init__(self, name, p_e)
+
+    def gen_bit(self, input_bit, stream_length):
+        """generates (pseudo) stochastic bitstream
+        @:param input_bit: bit to generate a bitstream for
+        @:return: stochastic bistream for input bit"""
+        bitstream = []
+        probability = input_bit * (1 - self.p_e) + self.p_e * (1 - input_bit)
+        frac = Fraction(Decimal(probability))
+        for i in range(0, stream_length):
+            r = gen_rand(frac.denominator, probability)
+            if r < frac.numerator:
+                bitstream.append(1)
+            else:
+                bitstream.append(0)
+        return bitstream
+        # random number between 0 and 15
+
+
 # ---------------------------------------------------------------------------------------------------
 class SngHandler:
     def __init__(self, name, probability):
@@ -141,9 +172,12 @@ class SngHandler:
         if data.generation_method == 0:
             sng_c = SngCompare('sng_c', self.probability)
             data.y_in = sng_c.gen_stream(data.x_in, data.bitlength)
-        else:
+        elif data.generation_method == 1:
             sng_s = SngScale('sng_s', self.probability)
             data.y_in = sng_s.gen_stream(data.x_in, data.bitlength)
+        else:
+            sng_c2 = SNGCompare2('sng_c2', self.probability)
+            data.y_in = sng_c2.gen_stream(data.x_in, data.bitlength)
 
         return data
 

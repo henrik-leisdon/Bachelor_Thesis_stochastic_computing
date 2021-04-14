@@ -18,3 +18,11 @@ class Data:
         self.y_in = [[], [], [], [], [], []]
         self.x_out = []
         self.y_out = [[], [], [], [], [], []]
+
+    def append_y_out(self, y):
+        self.y_out[0].extend(y[0])
+        self.y_out[1].extend(y[1])
+        self.y_out[2].extend(y[2])
+        self.y_out[3].extend(y[3])
+        self.y_out[4].extend(y[4])
+        self.y_out[5].extend(y[5])

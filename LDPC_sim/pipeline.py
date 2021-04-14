@@ -3,15 +3,14 @@ import copy
 import SNG
 import PC
 import STB
-import sc_circuit
-import sc_queue
+import MSC
 import Data
 
 
 class Pipeline:
     def __init__(self):
         self.sng = SNG.SngHandler('sng', 0.1)
-        self.msc = sc_queue.MscHandler('circuit')
+        self.msc = MSC.MscHandler('circuit')
         self.stb = STB.StochToBin('stb')
         self.pc = PC.ParityCheck('pc')
         self.data = Data.Data('data')
@@ -24,7 +23,7 @@ class Pipeline:
 
     def pipeline(self, input, bitlength, tau):
 
-        self.data.generation_method = 1
+        self.data.generation_method = 0
         self.data.x_in = input
         self.data.bitlength = bitlength
         self.data.tau = tau

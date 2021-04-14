@@ -1,7 +1,7 @@
 from LDPC_sim import SNG
 from LDPC_sim import PC
 from LDPC_sim import STB
-from LDPC_sim import sc_queue
+from LDPC_sim import MSC
 from LDPC_sim import Data
 
 import math
@@ -97,7 +97,7 @@ def test_correlation():
 class TestPipeline:
     def __init__(self):
         self.sng = SNG.SngHandler('sng', 0.1)
-        self.msc = sc_queue.MscHandler('circuit')
+        self.msc = MSC.MscHandler('circuit')
         self.stb = STB.StochToBin('stb')
         self.pc = PC.ParityCheck('pc')
         self.data = Data.Data('data')
@@ -119,8 +119,8 @@ class TestPipeline:
     def run(self, input, bitlength, probability):
         fail_count = 0
         error_rate = 0
-        for i in range(0, 5):
-            time.sleep(0.01)
+        for i in range(0, 100):
+            # time.sleep(0.01)
             self.data.reset()
             self.pipeline(input, bitlength, 0)
             # print(self.data.y_in)

@@ -185,7 +185,7 @@ class Circuit(Gate):
         self.y_5_out = Output('y_5_out', monitor=0)
 
     def generate(self):
-        print('circuit initialized')
+        # print('circuit initialized')
         # set input
 
         xor_0 = XOR('XOR_0')
@@ -241,7 +241,7 @@ class Circuit(Gate):
         y_out = []
         y_out.extend([self.y_0_out.value, self.y_1_out.value, self.y_2_out.value, self.y_3_out.value,
                       self.y_4_out.value, self.y_5_out.value])
-        print('cir y_out {}'.format(y_out))
+        # print('cir y_out {}'.format(y_out))
         return y_out
 
 
