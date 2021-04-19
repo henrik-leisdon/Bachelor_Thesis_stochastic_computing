@@ -26,7 +26,7 @@ class StochToBin:
 
     def convert(self, prob_bitstream):
         self.x_out = []
-        print(self.x_out)
+        # print(self.x_out)
         """convert bitstream to probability and rounds it to 1 or 0"""
         for y in range(0, len(prob_bitstream)):
             one_counter = 0

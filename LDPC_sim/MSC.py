@@ -57,6 +57,7 @@ class Output(Gate):
         self.monitor = monitor
         self.in_1 = Connection('in')
         self.value = None
+        self.connection = []
 
     def is_evaluatable(self):
         return True
@@ -262,16 +263,13 @@ class MscHandler:
             y_in = 6 n bit bitstreams"""
         self.y_out = [[], [], [], [], [], []]
 
-        if data.tau == 0:
-            data = self.sng_link.generate(data)
-            self.y_in = copy.deepcopy(data.y_in)
-
-        else:
-            self.y_in = data.y_out.copy()
+        # always generate a new 10 bit bitstream
+        data = self.sng_link.generate(data)
+        self.y_in = copy.deepcopy(data.y_in)
 
         for i in range(0, data.bitlength):
             self.sc.generate()
-            bit_y_in = self.parse_y_in(self.y_in)
+            bit_y_in = self.parse_y_in(copy.deepcopy(self.y_in))
             y_out = self.sc.run_circuit(bit_y_in)
             self.append_y_out(y_out)
 
@@ -288,7 +286,8 @@ class MscHandler:
                 self.clock = 0"""
 
         data.y_out = self.y_out.copy()
-        data.to_String()
+        # data.to_String()
+
 
         return data
 

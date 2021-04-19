@@ -81,8 +81,48 @@ def test_scale(probability, bit_length, test_size, tolerance):
             if bit == 1:
                 bit_count += 1
         pr = bit_count / bit_length
-        print(str(sn) + ' ' + str(pr))
+        # print(str(sn) + ' ' + str(pr))
         equal = pr < 0.1  #math.isclose(probability, pr, rel_tol=tolerance+0.2)
+        if not equal:
+            error_number += 1
+
+    print('number of errors:' + str(error_number))
+    print('error frequency: ' + str(error_number / test_size))
+
+
+def test_compare2(probability, bit_length, test_size, tolerance):
+    """generate 10/100/1000 n bit strings and test if the result is in the error tolerance"""
+    # sng_compare
+    print('1s:')
+
+    sng_c2 = SNG.SNGCompare2('sng_c2', probability)
+    error_number = 0
+    for i in range(0, test_size):
+        sn = sng_c2.gen_bit(1, bit_length)
+        bit_count = 0
+        for bit in sn:
+            if bit == 1:
+                bit_count += 1
+        pr = bit_count / bit_length
+        equal = math.isclose(1 - probability, pr, rel_tol=tolerance)
+        if not equal:
+            error_number += 1
+
+    print('number of errors:' + str(error_number))
+    print('error frequency: ' + str(error_number / test_size))
+
+    """---------------- ZEROS------------------------- """
+    print('\n0s:')
+    # sng_c = SNG.SngScale('sng_c', probability)
+    error_number = 0
+    for i in range(0, test_size):
+        sn = sng_c2.gen_bit(0, bit_length)
+        bit_count = 0
+        for bit in sn:
+            if bit == 1:
+                bit_count += 1
+        pr = bit_count / bit_length
+        equal = math.isclose(probability, pr, rel_tol=tolerance+0.1)
         if not equal:
             error_number += 1
 
@@ -125,7 +165,7 @@ class TestPipeline:
             self.pipeline(input, bitlength, 0)
             # print(self.data.y_in)
             # print(self.data.y_out)
-            print(self.data.x_out)
+            # print(self.data.x_out)
             parity = self.pc.parity_check(self.data.x_out)
             print(parity)
             y_in = self.data.y_in
@@ -174,6 +214,15 @@ def test1():
     test_scale(0.1, 1000, 1000, 0.1)
     print('-----------------------------------------------')
 
+    print('compare2')
+    test_compare2(0.1, 10, 1000, 0.1)
+    print('-----------------------------------------------')
+    test_compare2(0.1, 100, 1000, 0.1)
+    print('-----------------------------------------------')
+    test_compare2(0.1, 1000, 1000, 0.1)
+    print('-----------------------------------------------')
+    print('-----------------------------------------------')
+
 
 def test2():
 
@@ -184,5 +233,5 @@ def test2():
 
 if __name__ == '__main__':
     # test1()
-    test2()
+    test1()
 

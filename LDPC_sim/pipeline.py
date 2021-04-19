@@ -27,33 +27,31 @@ class Pipeline:
         self.data.x_in = input
         self.data.bitlength = bitlength
         self.data.tau = tau
+
         self.data = self.stb.request_bits(self.data)
         self.output.extend(self.data.y_out)
+        self.data.to_String()
+        print(self.pc.parity_check(self.data.x_out))
 
-        # print(self.pc.parity_check(self.data.x_out))
-
-        while tau < 5 and self.pc.parity_check(self.data.x_out) == False:
+        while tau < 10 and self.pc.parity_check(self.data.x_out) == False:
             self.data.tau += 0
-            prev_data = self.data
 
-            # print('y in while: ' + str(self.data.y_out))
+            self.data.y_in = copy.deepcopy(self.output)
             self.data = self.stb.request_bits(self.data)
 
             self.append_y_out(copy.deepcopy(self.data.y_out))
 
-            if self.data.y_out == prev_data.y_out:
-                print('in if')
-
-                data = self.sng.generate(self.data)
-                self.data.y_in = data.y_in
             print('x_out {}'.format(self.data.x_out))
             tau += 1
+            self.data.to_String()
+            print(self.pc.parity_check(self.data.x_out))
 
-        output = self.stb.convert(self.output)
-        print(output)
+        # output = self.stb.convert(self.output)
         print(' ')
-        print('{}, {}'.format(len(self.output[0]), self.output))
-        print(self.stb.x_out)
+        # print(output)
+        # print('{}, {}'.format(len(self.output[0]), self.output))
+        # print(self.stb.x_out)
+        print(self.data.x_out)
         print('---------------------------------------------------')
 
     def append_y_out(self, y_out):
