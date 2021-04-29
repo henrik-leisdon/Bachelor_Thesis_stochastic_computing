@@ -11,52 +11,65 @@ class Parser:
         with open("circuit.json", 'r') as json_file:
             y = json.load(json_file)
 
+        # object_dict: name:gate object
+        obj_dict = {}
         # for every gate
         for key, value in y.items():
-            print(key, value)
-
             # in every gate print subvalues/keys
             for subkey, subval in value.items():
-                print(subkey, subval)
+
                 if subkey == 'type' and subval == 'input':
-                    gate = MSC.Input(str(key))
-                    self.gatelist.append(gate)
+                    gate = MSC.Input(key)
+                    obj_dict[key] = gate
 
                 if subkey == 'type' and subval == 'xor':
-                    gate = MSC.XOR(str(key))
-                    self.gatelist.append(gate)
+                    gate = MSC.Input(key)
+                    obj_dict[key] = gate
 
-        print(str(self.gatelist))
+                if subkey == 'type' and subval == 'and':
+                    gate = MSC.Input(key)
+                    obj_dict[key] = gate
+
+                if subkey == 'type' and subval == 'Update':
+                    gate = MSC.Input(key)
+                    obj_dict[key] = gate
+
+        print(obj_dict)
+
+        # con dict: name:connections
+        con_dict = {}
+        for key, value in y.items():
+            for subkey, subvalue in value.items():
+                if subkey == 'connection':
+                    con_dict[key] = subvalue
+
+        print(con_dict)
+
+        for key, val in con_dict.items():
+            #print(type(con_dict))
+            # print(key, val)
+            if len(val) != 0:
+                print(val)
+                for k in val:
+                    print(k)
+                    print(type(k))
+                    print(k.items())
+                    for subkey, subval in k.items():
+                        print(subkey, subval)
+                        obj_dict[val[1]].connect(getattr(obj_dict[key], val[0]))
 
 
-        """with open('circuit.json', 'r') as circuit:
-            matrix = [line.split() for line in circuit]
-            # print(matrix)
 
-            for it in range(0, len(matrix)):
-                row = matrix[it]
-                # print(row)
-                if row[0] == 'define':
-                    if row[1] == 'input':
-                        input = MSC.Input(row[2])
-                        self.gatelist.append(input)
-                    if row[1] == 'output':
-                        output = MSC.Output(row[2])
-                        self.gatelist.append(output)
-                    if row[1] == 'XOR':
-                        xor = MSC.XOR(row[2])
-                        self.gatelist.append(xor)
-                    if row[1] == 'connect':
-                        num_of_connections = len(row) - 3  # define, connect and gate name
-                        gate = MSC.Gate
-                        for g in self.gatelist:
-                            if g.name == row[2]:
-                                gate = g
-                        for i in range(3, num_of_connections, 2):
-                            for gatecon in self.gatelist:
-                                if gatecon.name == row[i]:
-                                    gate.connect(gatecon)
-"""
+
+            # print(getattr(obj_dict[key], 'name'))
+            # print(getattr(obj_dict[key], 'in_1'))
+            # obj_dict[key].connect()
+
+
+
+
+
+
 
 
 

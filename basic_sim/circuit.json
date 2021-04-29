@@ -3,34 +3,20 @@
         "type": "input",
         "value": "0",
         "connection": [
-            {
-                "xor1": "in1"
-            },
-            {
-                "and1": "in2"
-            }
         ]
     },
     "y_1": {
         "type": "input",
         "value": "1",
         "connection": [
-            {
-                "Update2": "in1"
-            },
-            {
-                "and2": "in2"
-            }
         ]
     },
     "xor1": {
         "type": "xor",
         "connection": [
             {
-                "out1": "in1"
-            },
-            {
-                "and2": "in2"
+                "in_1": "y_0",
+                "in_2": "y_1"
             }
         ]
     }
