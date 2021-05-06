@@ -50,6 +50,9 @@ class Input(Gate):
         for con in connections:
             self.connection.append(con)
 
+    def reset(self):
+        # self.value = None
+        pass
 
 class Output(Gate):
     def __init__(self, name, monitor=0):
@@ -69,6 +72,9 @@ class Output(Gate):
     def update(self):
         pass
 
+    def reset(self):
+        self.value = None
+
 
 class Gate2(Gate):
     def __init__(self, name):
@@ -86,6 +92,9 @@ class Gate2(Gate):
             connections = [connections]
         for con in connections:
             self.connection.append(con)
+
+    def reset(self):
+        self.value = None
 
 
 class XOR(Gate2):
@@ -109,8 +118,13 @@ class XOR(Gate2):
         if self.monitor == 1 and tmp_val != self.value:
             print(str(self.name) + ' ' + str(self.value))
 
+    def reset(self):
+        self.in_1.value = None
+        self.in_2.value = None
+        self.value = None
 
-class Multiplexer(Gate2):
+
+class Multiplexer2(Gate2):
     def __init__(self, name):
         Gate2.__init__(self, name)
         self.in_1 = Connection('in_1')
@@ -135,6 +149,60 @@ class Multiplexer(Gate2):
         if self.monitor == 1 and tmp_val != self.value:
             print(str(self.name) + ' ' + str(self.value))
 
+    def reset(self):
+        self.in_1.value = None
+        self.in_2.value = None
+        self.in_3.value = None
+        self.value = None
+
+
+class Multiplexer4(Gate2):
+    def __init__(self, name):
+        Gate2.__init__(self, name)
+        # input
+        self.in_1 = Connection('in_1')
+        self.in_2 = Connection('in_2')
+        self.in_3 = Connection('in_3')
+        self.in_4 = Connection('in_4')
+        # control bits
+        self.in_5 = Connection('in_5')
+        self.in_6 = Connection('in_6')
+
+    def is_evaluatable(self):
+        if self.in_1.value is None or self.in_2.value is None or self.in_3.value is None or self.in_4.value is None:
+            return False
+        else:
+            return True
+
+    def evaluate(self):
+        tmp_val = self.value
+        r_bit1 = random.uniform(0, 1)
+        r_bit2 = random.uniform(0, 1)
+        self.in_5.value = r_bit1
+        self.in_6.value = r_bit2
+        if self.in_5 == 0 and self.in_6 == 0:
+            self.value = self.in_1.value
+        elif self.in_5 == 0 and self.in_6 == 1:
+            self.value = self.in_2.value
+        elif self.in_5 == 1 and self.in_6 == 0:
+            self.value = self.in_3.value
+        else:
+            self.value = self.in_4.value
+
+        if self.monitor == 1 and tmp_val != self.value:
+            print(str(self.name) + ' ' + str(self.value))
+
+    def reset(self):
+        self.in_1.value = None
+        self.in_2.value = None
+        self.in_3.value = None
+        self.in_4.value = None
+        self.in_5.value = None
+        self.in_6.value = None
+        self.value = None
+
+
+        # tag with evaluated or not
 
 # ---------------------------------------------------------------------------------------------------
 class Circuit(Gate):
@@ -151,32 +219,57 @@ class Circuit(Gate):
 
         self.y_0_out = Output('y_0_out', monitor=0)
 
-    def generate(self):
+    def gen_rc(self):
         # print('circuit initialized')
         # set input
 
-        xor_0 = XOR('XOR_0')
-        xor_1 = XOR('XOR_1')
+        self.xor_0 = XOR('XOR_0')
+        self.xor_1 = XOR('XOR_1')
 
-        mult = Multiplexer('M_1')
+        self.mult = Multiplexer2('M_1')
 
-        self.y_0.connect([xor_0.in_1])
-        self.y_1.connect([xor_0.in_2])
-        self.y_2.connect([xor_1.in_1])
-        self.y_3.connect([xor_1.in_2])
+        self.y_0.connect([self.xor_0.in_1])
+        self.y_1.connect([self.xor_0.in_2])
+        self.y_2.connect([self.xor_1.in_1])
+        self.y_3.connect([self.xor_1.in_2])
 
-        xor_0.connect([mult.in_1])
-        xor_1.connect([mult.in_2])
+        self.xor_0.connect([self.mult.in_1])
+        self.xor_1.connect([self.mult.in_2])
 
-        mult.connect([self.y_0_out])
+        self.mult.connect([self.y_0_out])
 
         self.gate_list.append(self.y_0)
-        self.gate_list.extend([self.y_1, self.y_2, self.y_3, xor_0, xor_1, mult, self.y_0_out])
+        self.gate_list.extend([self.y_1, self.y_2, self.y_3, self.xor_0, self.xor_1, self.mult, self.y_0_out])
         self.full_list = copy.deepcopy(self.gate_list)
 
-    def run_circuit(self, input):
+    def gen_adaptive_rc(self):
+        self.xor_0 = XOR('XOR_0')
+        self.xor_1 = XOR('XOR_1')
+        self.xor_2 = XOR('XOR_2')
+        self.xor_3 = XOR('XOR_3')
+
+        self.mult = Multiplexer4('M_1')
+
+        self.y_0.connect([self.xor_0.in_1, self.xor_2.in_1, self.xor_3.in_1])
+        self.y_1.connect([self.xor_0.in_2, self.xor_2.in_2])
+        self.y_2.connect([self.xor_1.in_1, self.xor_3.in_2])
+        self.y_3.connect([self.xor_1.in_2])
+
+        self.xor_0.connect([self.mult.in_1])
+        self.xor_1.connect([self.mult.in_2])
+        self.xor_2.connect([self.mult.in_3])
+        self.xor_3.connect([self.mult.in_4])
+
+        self.mult.connect([self.y_0_out])
+
+        self.gate_list.append(self.y_0)
+        self.gate_list.extend([self.y_1, self.y_2, self.y_3, self.xor_0, self.xor_1, self.xor_2, self.xor_3, self.mult,
+                               self.y_0_out])
+
+    def run_rc(self, input):
         """run circuit
         @:param input: 1 input bit from every stocastic bitstream"""
+
         self.y_0.value = int(input[0])
         self.y_1.value = int(input[1])
         self.y_2.value = int(input[2])
@@ -184,13 +277,24 @@ class Circuit(Gate):
 
         while self.gate_list:
             gate = self.gate_list.pop(0)
+
             if gate.is_evaluatable:
                 gate.evaluate()
                 gate.update()
+                # print('{}: {}'.format(gate.name, gate.value))  # LEAVE FOR DEBUGGING!!
 
             else:
                 gate.tau += 1
                 if gate.tau < 5:
                     self.gate_list.append(gate)
 
-        return self.y_0_out.value
+        output = self.y_0_out.value
+
+        # clean up
+        self.gate_list.append(self.y_0)
+        self.gate_list.extend([self.y_1, self.y_2, self.y_3, self.xor_0, self.xor_1, self.mult, self.y_0_out])
+
+        for gate in self.gate_list:
+            gate.reset()
+
+        return output
