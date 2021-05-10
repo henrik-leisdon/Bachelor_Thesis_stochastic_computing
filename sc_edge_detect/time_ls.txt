@@ -1,0 +1,144 @@
+[[0. 0. 1. ... 0. 1. 0.]
+ [0. 0. 1. ... 0. 0. 0.]
+ [1. 0. 1. ... 1. 0. 0.]
+ ...
+ [1. 0. 1. ... 1. 0. 0.]
+ [1. 1. 1. ... 1. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]]
+done im: 0
+--- 4.553891897201538 seconds ---
+done im: 1
+--- 4.518744230270386 seconds ---
+done im: 2
+--- 4.607996940612793 seconds ---
+done im: 3
+--- 4.772166013717651 seconds ---
+done im: 4
+--- 4.933921575546265 seconds ---
+done im: 5
+--- 5.064337491989136 seconds ---
+done im: 6
+--- 5.102149963378906 seconds ---
+done im: 7
+--- 5.251373291015625 seconds ---
+done im: 8
+--- 5.420175075531006 seconds ---
+done im: 9
+--- 5.7216410636901855 seconds ---
+done im: 10
+--- 5.478585481643677 seconds ---
+done im: 11
+--- 5.614194393157959 seconds ---
+done im: 12
+--- 5.706590890884399 seconds ---
+done im: 13
+--- 6.123679161071777 seconds ---
+done im: 14
+--- 5.952761888504028 seconds ---
+done im: 15
+--- 5.947059869766235 seconds ---
+done im: 16
+--- 6.056331634521484 seconds ---
+done im: 17
+--- 7.2909321784973145 seconds ---
+done im: 18
+--- 8.360273838043213 seconds ---
+done im: 19
+--- 6.438661336898804 seconds ---
+done im: 20
+--- 6.438482999801636 seconds ---
+done im: 21
+--- 6.750922203063965 seconds ---
+done im: 22
+--- 7.203361988067627 seconds ---
+done im: 23
+--- 6.992337465286255 seconds ---
+done im: 24
+--- 6.872801303863525 seconds ---
+done im: 25
+--- 7.006274938583374 seconds ---
+done im: 26
+--- 7.241594076156616 seconds ---
+done im: 27
+--- 7.273517608642578 seconds ---
+done im: 28
+--- 7.373811483383179 seconds ---
+done im: 29
+--- 7.453686237335205 seconds ---
+
+Process finished with exit code 0
+
+Num of operations:
+
+process img: 6459617
+[[1. 0. 1. ... 0. 1. 0.]
+ [0. 1. 0. ... 0. 1. 0.]
+ [1. 0. 0. ... 0. 1. 0.]
+ ...
+ [1. 1. 1. ... 1. 0. 0.]
+ [1. 0. 0. ... 1. 1. 0.]
+ [0. 0. 0. ... 0. 0. 0.]]
+process img: 6459617
+done im: 0
+process img: 6459617
+done im: 1
+process img: 6459617
+done im: 2
+process img: 6459617
+done im: 3
+process img: 6459617
+done im: 4
+process img: 6459617
+done im: 5
+process img: 6459617
+done im: 6
+process img: 6459617
+done im: 7
+process img: 6459617
+done im: 8
+process img: 6459617
+done im: 9
+process img: 6459617
+done im: 10
+process img: 6459617
+done im: 11
+process img: 6459617
+done im: 12
+process img: 6459617
+done im: 13
+process img: 6459617
+done im: 14
+process img: 6459617
+done im: 15
+process img: 6459617
+done im: 16
+process img: 6459617
+done im: 17
+process img: 6459617
+done im: 18
+process img: 6459617
+done im: 19
+process img: 6459617
+done im: 20
+process img: 6459617
+done im: 21
+process img: 6459617
+done im: 22
+process img: 6459617
+done im: 23
+process img: 6459617
+done im: 24
+process img: 6459617
+done im: 25
+process img: 6459617
+done im: 26
+process img: 6459617
+done im: 27
+process img: 6459617
+done im: 28
+process img: 6459617
+done im: 29
+generate seq: 178200000
+
+Process finished with exit code 0
+

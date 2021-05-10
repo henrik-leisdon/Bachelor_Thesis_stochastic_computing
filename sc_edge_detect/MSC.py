@@ -267,6 +267,7 @@ class Circuit(Gate):
                                self.y_0_out])
 
     def run_rc(self, input):
+        num_comp = 0
         """run circuit
         @:param input: 1 input bit from every stocastic bitstream"""
 
@@ -287,6 +288,7 @@ class Circuit(Gate):
                 gate.tau += 1
                 if gate.tau < 5:
                     self.gate_list.append(gate)
+            num_comp += 1
 
         output = self.y_0_out.value
 
@@ -296,5 +298,7 @@ class Circuit(Gate):
 
         for gate in self.gate_list:
             gate.reset()
+            num_comp += 1
 
+        # print(num_comp)
         return output
