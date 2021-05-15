@@ -26,13 +26,14 @@ class EdgeDetect:
                 r_bit = SNG.gen_bit_const(img[i][j], r_num)
                 img_sto[i][j] = r_bit
             num_ops += 1
-        self.msc.gen_rc()
+        # self.msc.gen_rc()
+        self.msc.gen_adaptive_rc()
         # loop for roberts cross operator
         for i in range(0, len(img_sto) - 1):
             for j in range(0, len(img_sto[i]) - 1):
                 # run MSC
 
-                sc = self.msc.run_rc([img_sto[i][j], img_sto[i + 1][j + 1], img_sto[i + 1][j], img_sto[i][j + 1]])
+                sc = self.msc.run_rc([img_sto[i][j], img_sto[i + 1][j + 1], img_sto[i + 1][j], img_sto[i][j + 1]], 1)
                 img_edg[i][j] = sc
                 num_ops += 1 + 16  # for msc interations
 
@@ -42,9 +43,9 @@ class EdgeDetect:
 
     def gen_seq(self, length):
         # import image
-        img_name = 'cobble_'
+        img_name = 'cm_adv_'
         num_ops = 0
-        image = Image.open('04_cobble_tex/c16.png').convert('L')
+        image = Image.open('11_camera_man/camera_man.png').convert('L')
 
         # gen first image
         im1 = self.processImage(image)
@@ -63,7 +64,6 @@ class EdgeDetect:
             bin_image = self.processImage(image)
             seq.append(bin_image)
 
-            # parallelize!
             # convert stochastic matrices to greyscale image
             for i in range(0, len(im1)):
                 for j in range(0, len(im1[i])):
@@ -87,7 +87,7 @@ class EdgeDetect:
 
 def main():
     ed = EdgeDetect()
-    ed.gen_seq(100)
+    ed.gen_seq(50)
 
 
 if __name__ == '__main__':

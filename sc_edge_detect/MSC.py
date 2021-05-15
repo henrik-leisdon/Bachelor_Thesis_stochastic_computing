@@ -54,6 +54,7 @@ class Input(Gate):
         # self.value = None
         pass
 
+
 class Output(Gate):
     def __init__(self, name, monitor=0):
         Gate.__init__(self, name)
@@ -201,8 +202,8 @@ class Multiplexer4(Gate2):
         self.in_6.value = None
         self.value = None
 
-
         # tag with evaluated or not
+
 
 # ---------------------------------------------------------------------------------------------------
 class Circuit(Gate):
@@ -266,8 +267,8 @@ class Circuit(Gate):
         self.gate_list.extend([self.y_1, self.y_2, self.y_3, self.xor_0, self.xor_1, self.xor_2, self.xor_3, self.mult,
                                self.y_0_out])
 
-    def run_rc(self, input):
-        num_comp = 0
+    def run_rc(self, input, gen_method):
+        num_op = 0
         """run circuit
         @:param input: 1 input bit from every stocastic bitstream"""
 
@@ -288,17 +289,24 @@ class Circuit(Gate):
                 gate.tau += 1
                 if gate.tau < 5:
                     self.gate_list.append(gate)
-            num_comp += 1
+            num_op += 1
 
         output = self.y_0_out.value
 
         # clean up
-        self.gate_list.append(self.y_0)
-        self.gate_list.extend([self.y_1, self.y_2, self.y_3, self.xor_0, self.xor_1, self.mult, self.y_0_out])
+
+        if gen_method == 1:
+            self.gate_list.append(self.y_0)
+            self.gate_list.extend(
+                [self.y_1, self.y_2, self.y_3, self.xor_0, self.xor_1, self.xor_2, self.xor_3, self.mult,
+                 self.y_0_out])
+        else:   # gen method == 0
+            self.gate_list.append(self.y_0)
+            self.gate_list.extend([self.y_1, self.y_2, self.y_3, self.xor_0, self.xor_1, self.mult, self.y_0_out])
 
         for gate in self.gate_list:
             gate.reset()
-            num_comp += 1
+            num_op += 1
 
         # print(num_comp)
         return output

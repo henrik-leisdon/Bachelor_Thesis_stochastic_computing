@@ -1,5 +1,6 @@
 import random
 
+
 def gen_bit_const(input_gradient, r_num):
     """generates (pseudo) stochastic bit
     @:param input_bit: bit to generate a bitstream
@@ -14,6 +15,7 @@ def gen_bit_const(input_gradient, r_num):
         return 1
     else:
         return 0
+
 
 def gen_bit(input_gradient):
     """generates (pseudo) stochastic bit
