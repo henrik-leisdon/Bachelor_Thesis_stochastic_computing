@@ -1,0 +1,140 @@
+imporved 1 count
+
+--- 0.4827094078063965 seconds ---
+done im: 1
+--- 0.5255997180938721 seconds ---
+done im: 2
+--- 0.5046226978302002 seconds ---
+done im: 3
+--- 0.5186367034912109 seconds ---
+done im: 4
+--- 0.562471866607666 seconds ---
+done im: 5
+--- 0.5345933437347412 seconds ---
+done im: 6
+--- 0.5564894676208496 seconds ---
+done im: 7
+--- 0.6203413009643555 seconds ---
+done im: 8
+--- 0.6273226737976074 seconds ---
+done im: 9
+--- 0.6143856048583984 seconds ---
+done im: 10
+--- 0.6219620704650879 seconds ---
+done im: 11
+--- 0.6207244396209717 seconds ---
+done im: 12
+--- 0.7370119094848633 seconds ---
+done im: 13
+--- 0.6492650508880615 seconds ---
+done im: 14
+--- 0.6512589454650879 seconds ---
+done im: 15
+--- 0.790907621383667 seconds ---
+done im: 16
+--- 0.6592369079589844 seconds ---
+done im: 17
+--- 0.6871623992919922 seconds ---
+done im: 18
+--- 0.6991081237792969 seconds ---
+done im: 19
+--- 0.7101418972015381 seconds ---
+
+Process finished with exit code 0
+
+
+
+-------------------------------------------------------------------------------------
+
+iterative version: (camera man image)
+
+--- 0.5714871883392334 seconds ---
+done im: 1
+--- 0.5774633884429932 seconds ---
+done im: 2
+--- 0.6412625312805176 seconds ---
+done im: 3
+--- 0.6941680908203125 seconds ---
+done im: 4
+--- 0.6911275386810303 seconds ---
+done im: 5
+--- 0.7230660915374756 seconds ---
+done im: 6
+--- 0.7829062938690186 seconds ---
+done im: 7
+--- 0.7779481410980225 seconds ---
+done im: 8
+--- 0.8207776546478271 seconds ---
+done im: 9
+--- 0.8587040901184082 seconds ---
+done im: 10
+--- 0.8706958293914795 seconds ---
+done im: 11
+--- 0.8746635913848877 seconds ---
+done im: 12
+--- 0.9504547119140625 seconds ---
+done im: 13
+--- 0.959435224533081 seconds ---
+done im: 14
+--- 0.9983358383178711 seconds ---
+done im: 15
+--- 1.0292184352874756 seconds ---
+done im: 16
+--- 1.0362472534179688 seconds ---
+done im: 17
+--- 1.0900905132293701 seconds ---
+done im: 18
+--- 1.1399288177490234 seconds ---
+done im: 19
+--- 1.1808421611785889 seconds ---
+
+Process finished with exit code 0
+
+
+--------------------------------------------------------------
+
+normal version:
+
+--- 0.8267946243286133 seconds ---
+done im: 1
+--- 1.0411343574523926 seconds ---
+done im: 2
+--- 0.9923446178436279 seconds ---
+done im: 3
+--- 1.250657320022583 seconds ---
+done im: 4
+--- 1.4930446147918701 seconds ---
+done im: 5
+--- 1.2725589275360107 seconds ---
+done im: 6
+--- 1.1191160678863525 seconds ---
+done im: 7
+--- 1.064645528793335 seconds ---
+done im: 8
+--- 1.0641534328460693 seconds ---
+done im: 9
+--- 1.1259901523590088 seconds ---
+done im: 10
+--- 1.1476194858551025 seconds ---
+done im: 11
+--- 1.2628202438354492 seconds ---
+done im: 12
+--- 1.2765874862670898 seconds ---
+done im: 13
+--- 1.4293324947357178 seconds ---
+done im: 14
+--- 1.3264539241790771 seconds ---
+done im: 15
+--- 1.675548791885376 seconds ---
+done im: 16
+--- 1.3753149509429932 seconds ---
+done im: 17
+--- 1.518918514251709 seconds ---
+done im: 18
+--- 1.5506129264831543 seconds ---
+done im: 19
+--- 1.5838005542755127 seconds ---
+
+Process finished with exit code 0
+
+---------------------------------------------------------------------------------------------
