@@ -1,7 +1,7 @@
 import random
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
 import SNG
 import MSC
 import time
@@ -44,7 +44,8 @@ class EdgeDetect:
         # import image
         img_name = 'cm_'
         num_ops = 0
-        image = Image.open('cm_sp_original.jpg').convert('L')
+        image = Image.open('camera_man.png').convert('L')
+
 
         # gen first image
         im1 = self.processImage(image)
@@ -59,10 +60,7 @@ class EdgeDetect:
         for im_num in range(0, length):
             start_time = time.time()
             bin_image = self.processImage(image)
-            if im_num == 1:
-                bin_image = bin_image * 4
-            if im_num == 2:
-                bin_image = bin_image * 2
+
             # add matrix, then divide by number of frames and resize to grayscale image
             sc_mat = np.add(sc_mat, bin_image)
             self.save_img((sc_mat/(im_num+2))*255, img_name, im_num)
