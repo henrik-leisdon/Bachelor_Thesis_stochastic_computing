@@ -4,17 +4,19 @@ import random
 import numpy as np
 from PIL import Image, ImageOps
 import matplotlib.pyplot as plt
-import SNG
-import MSC
-import time
 
-from skimage import data
-from skimage.util import img_as_ubyte
 from skimage.filters.rank import entropy
 from skimage.morphology import disk
 
 
+def save_img(img_mat, img_name, img_num):
+    result = Image.fromarray(img_mat)
+    r = result.convert("L")
+    r.save(str(img_name) + str(img_num) + ".png")
+
+
 def calc_entropy(img):
+    """shannon entropy: attempt 1"""
     # image = Image.open('c16.png').convert('L')
     # img = np.array(image)
     # print(img)
@@ -46,6 +48,7 @@ def calc_entropy(img):
 
 
 def calc_GLCM_entropy(img):
+    """entropy of GLCM matrix"""
     # image = Image.open('cm_sp_original.jpg').convert('L')
     # img = np.array(image)
 
@@ -73,41 +76,66 @@ def calc_GLCM_entropy(img):
             H += x
             length += 1
     H = -H
-    H = H/normalize
     print(H)
     return H
 
 
 def blocks():
+    """method to split entropy into blocks
+    :return: matrix of entropy blocks. The higher the entropy, the lower the weighting"""
     image = Image.open('cm_sp_original.jpg').convert('L')
     image = ImageOps.invert(image)
     img = np.array(image)
-    imgplot2 = plt.imshow(img)
-    plt.show()
+    # imgplot2 = plt.imshow(img)
+    # plt.show()
+    e_list = []
 
     entr = np.zeros((len(img), len(img[0])))
 
     for i in range(0, len(img)-16, 16):
         for j in range(0, len(img[i])-16, 16):
             submat = img[i:i+16, j:j+16]
-            entropy = calc_GLCM_entropy(submat)
+            entropy_e = calc_entropy(submat)
+            entrpy = entropy_e
+            print(entrpy)
+            e_list.append(entrpy)
+
+    e_list = nomalize(e_list)
+
+    it = 0
+    for i in range(0, len(img) - 16, 16):
+        for j in range(0, len(img[i]) - 16, 16):
             # print(entropy)
             for x in range(0, 16):
                 for y in range(0, 16):
                     # print('i{}, j{}, x{}, y{} '.format(i, j, x, y))
-                    entr[i+x, j+y] = entropy
-
-    # save_img(entr, 'entropy_sh_', 1)
-    imgplot = plt.imshow(entr)
-    plt.show()
+                    entr[i+x, j+y] = e_list[it]*255
+            it += 1
 
 
-def save_img(img_mat, img_name, img_num):
-    result = Image.fromarray(img_mat)
-    r = result.convert("L")
-    r.save(str(img_name) + str(img_num) + ".png")
+
+    save_img(entr, 'entropy_sh_', 3)
+    # imgplot = plt.imshow(entr)
+    # plt.show()
+    return entr
+
+def nomalize(e_list):
+    max_val = max(e_list)
+    min_val = min(e_list)
+
+    normalized = []
+
+    for element in e_list:
+        normal = (element-min_val)/(max_val-min_val)
+        print(normal)
+        normalized.append(normal)
+
+    return normalized
+
+
 
 def entropy_library():
+    """usage of the scikit library (best entropy results)"""
     image = Image.open('cm_sp_original.jpg').convert('L')
     image = ImageOps.invert(image)
     img = np.array(image)
@@ -119,6 +147,7 @@ def entropy_library():
 
 
 def entropy_copy():
+    """copy from the internet"""
     # code from: https://www.hdm-stuttgart.de/~maucher/Python/MMCodecs/html/basicFunctions.html
     colorIm = Image.open('cm_sp_original.jpg')
     greyIm = colorIm.convert('L')
@@ -165,9 +194,9 @@ def entropy_c(signal):
 
 
 def main():
-    # blocks()
+    blocks()
     # entropy_library()
-    entropy_copy()
+    # entropy_copy()
 
 if __name__ == '__main__':
     main()
