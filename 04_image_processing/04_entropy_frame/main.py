@@ -1,11 +1,11 @@
 import random
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
 import SNG
 import MSC
 import time
-import concurrent.futures
+import entropy
 
 
 class EdgeDetect:
@@ -15,7 +15,6 @@ class EdgeDetect:
         self.it = 0
 
     def processImage(self, image):
-        num_ops = 0
         img = np.array(image)
         img_sto = np.zeros((len(img), len(img[0])))
         img_edg = np.zeros((len(img), len(img[0])))
@@ -27,7 +26,6 @@ class EdgeDetect:
             for j in range(0, len(img[i])):
                 r_bit = SNG.gen_bit_const(img[i][j], r_num)
                 img_sto[i][j] = r_bit
-            num_ops += 1
 
         # loop for roberts cross operator
         for i in range(0, len(img_sto) - 1):
@@ -35,7 +33,6 @@ class EdgeDetect:
                 # run MSC
                 sc = self.msc.run_rc([img_sto[i][j], img_sto[i + 1][j + 1], img_sto[i + 1][j], img_sto[i][j + 1]])
                 img_edg[i][j] = sc
-                num_ops += 1 + 16  # for msc interations
 
         # print('process img: {}'.format(num_ops))
         return img_edg
@@ -43,7 +40,8 @@ class EdgeDetect:
     def gen_seq(self, length):
         # import image
         img_name = 'cm_'
-        image = Image.open('camera_man.png').convert('L')
+        num_ops = 0
+        image = Image.open('cm_sp_original.jpg').convert('L')
 
         # gen first image
         im1 = self.processImage(image)
@@ -53,31 +51,44 @@ class EdgeDetect:
         r.save(img_name + str(0) + ".png")
         seq = [im1]
 
-        out_image = np.zeros((len(im1), len(im1[0])))
-        overall_val = 1
         start_time = 0
-        # for loop for every frame
+        w = [entropy.calc_entropy(im1)]  # weight/ entropy vector
+        w_n = []    # normalized entropy vector
+        # generate n images
+
+        out_image = np.zeros((len(im1), len(im1[0])))
+
         for im_num in range(0, length):
             start_time = time.time()
             bin_image = self.processImage(image)
-            seq.append(bin_image/(im_num+2))
+            seq.append(bin_image)
+            self.save_img(bin_image*255, 'raw_', im_num)
 
+            w.append(entropy.calc_entropy(bin_image))
+            w_n = entropy.nomalize(w)
+            sum = 0
+            for e in range(0, len(w_n)):
+                sum += w_n[e]
+
+            # print(sum)
+            print(w)
+            # print(w_n)
 
             # convert stochastic matrices to greyscale image
             for i in range(0, len(im1)):
                 for j in range(0, len(im1[i])):
-
                     val = 0
                     for k in range(0, len(seq)):
-                        val += seq[k][i][j]
+                        num_ops += 1
+                        val += seq[k][i][j]*(1 - w[k])
 
-                    out_image[i][j] = val/overall_val * 255
-            overall_val += 1 / (im_num + 2)
+
+                    out_image[i][j] = (val / sum) * 255
+
 
             self.save_img(out_image, img_name, im_num)
             print("done im: " + str(im_num))
             print("--- %s seconds ---" % (time.time() - start_time))
-            # print('generate seq: {}'.format(num_ops))  # number of operations
 
     def save_img(self, img_mat, img_name, img_num):
         result = Image.fromarray(img_mat)
@@ -87,7 +98,7 @@ class EdgeDetect:
 
 def main():
     ed = EdgeDetect()
-    ed.gen_seq(40)
+    ed.gen_seq(100)
 
 
 if __name__ == '__main__':

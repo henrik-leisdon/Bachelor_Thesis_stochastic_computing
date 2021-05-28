@@ -46,7 +46,7 @@ Process finished with exit code 0
 
 -------------------------------------------------------------------------------------
 
-iterative version: (camera man image)
+simplified msc: (camera man image)
 
 --- 0.5714871883392334 seconds ---
 done im: 1
