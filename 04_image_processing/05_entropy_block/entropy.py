@@ -80,7 +80,7 @@ def calc_GLCM_entropy(img):
     return H
 
 
-def blocks(img):
+def blocks(img, img_pow):
     """method to split entropy into blocks
     :return: matrix of entropy blocks. The higher the entropy, the lower the weighting"""
 
@@ -98,7 +98,7 @@ def blocks(img):
             print(entrpy)
             e_list.append(entrpy)
 
-    e_list = nomalize(e_list)
+    e_list = nomalize(e_list, img_pow)
 
     it = 0
     for i in range(0, len(img) - 16, 16):
@@ -116,19 +116,103 @@ def blocks(img):
     # print(entr)
     return entr
 
-def nomalize(e_list):
+
+def block8(img, img_pow):
+    """method to split entropy into blocks
+    :return: matrix of entropy blocks. The higher the entropy, the lower the weighting"""
+
+    # imgplot2 = plt.imshow(img)
+    # plt.show()
+    e_list = []
+    img = np.array(img)
+    entr = np.zeros((len(img), len(img[0])))
+
+    for i in range(0, len(img)-8, 8):
+        for j in range(0, len(img[i])-8, 8):
+            submat = img[i:i+8, j:j+8]
+            entropy_e = calc_entropy(submat)
+            entrpy = entropy_e
+            # print(entrpy)
+            e_list.append(entrpy)
+
+    e_list = nomalize(e_list, img_pow)
+
+    it = 0
+    for i in range(0, len(img) - 8, 8):
+        for j in range(0, len(img[i]) - 8, 8):
+            # print(entropy)
+            for x in range(0, 8):
+                for y in range(0, 8):
+                    # print('i{}, j{}, x{}, y{} '.format(i, j, x, y))
+                    entr[i+x, j+y] = e_list[it]*255
+            it += 1
+
+    save_img(entr, 'block8_', 0)
+    # imgplot = plt.imshow(entr)
+    # plt.show()
+    # print(entr)
+    return entr
+
+
+def block_offset(img, img_pow):
+    """method to split entropy into blocks
+    :return: matrix of entropy blocks. The higher the entropy, the lower the weighting"""
+
+    # imgplot2 = plt.imshow(img)
+    # plt.show()
+    e_list = []
+    img = np.array(img)
+    entr = np.zeros((len(img), len(img[0])))
+
+    for i in range(8, len(img)-24, 16):
+        for j in range(8, len(img[i])-24, 16):
+            submat = img[i:i+16, j:j+16]
+            entropy_e = calc_entropy(submat)
+            entrpy = entropy_e
+            # print(entrpy)
+            e_list.append(entrpy)
+
+    e_list = nomalize(e_list, img_pow)
+
+    it = 0
+    for i in range(8, len(img) - 24, 16):
+        for j in range(8, len(img[i]) - 24, 16):
+            # print(entropy)
+            for x in range(0, 16):
+                for y in range(0, 16):
+                    # print('i{}, j{}, x{}, y{} '.format(i, j, x, y))
+                    entr[i+x, j+y] = e_list[it]*255
+            it += 1
+
+    # save_img(entr, 'offset_', 0)
+    # imgplot = plt.imshow(entr)
+    # plt.show()
+    # print(entr)
+    return entr
+
+
+def combine_entr(img, img_pow):
+    img1 = blocks(img, img_pow)
+    img2 = block_offset(img, img_pow)
+    img = np.add(img1, img2)/2
+    save_img(img, "combine_", 1)
+    return img
+
+
+def nomalize(e_list, img_pow):
     max_val = max(e_list)
     min_val = min(e_list)
 
     normalized = []
 
     for element in e_list:
-        normal = (element-min_val)/(max_val-min_val)
+        normal = (pow(element - min_val, img_pow)) / pow(max_val - min_val, img_pow)    # powered
+        # normal = (element - min_val) / (max_val - min_val)  # not powered
+
         # print(normal)
         normalized.append(normal)
 
     return normalized
-
 
 
 def entropy_library():
@@ -147,10 +231,13 @@ def entropy_library():
 
 
 def main():
-    image = Image.open('gauss_noise_crop.png').convert('L')
-    image = ImageOps.invert(image)
+    image = Image.open('cm_sp_original.jpg').convert('L')
+    # image = ImageOps.invert(image)
     # img = np.array(image)
-    blocks(image)
+    # blocks(image)
+    block8(image)
+    # combine_entr(image)
+    # block_offset(image)
     # entropy_library()
     # entropy_copy()
 

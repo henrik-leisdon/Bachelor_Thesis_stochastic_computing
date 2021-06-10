@@ -82,9 +82,7 @@ class EdgeDetect:
                         num_ops += 1
                         val += seq[k][i][j]*(1 - w[k])
 
-
                     out_image[i][j] = (val / sum) * 255
-
 
             self.save_img(out_image, img_name, im_num)
             print("done im: " + str(im_num))

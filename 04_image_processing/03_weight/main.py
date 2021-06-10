@@ -62,7 +62,6 @@ class EdgeDetect:
             bin_image = self.processImage(image)
             seq.append(bin_image/(im_num+2))
 
-
             # convert stochastic matrices to greyscale image
             for i in range(0, len(im1)):
                 for j in range(0, len(im1[i])):
@@ -70,11 +69,12 @@ class EdgeDetect:
                     val = 0
                     for k in range(0, len(seq)):
                         val += seq[k][i][j]
+                        print(val)
 
                     out_image[i][j] = val/overall_val * 255
             overall_val += 1 / (im_num + 2)
 
-            self.save_img(out_image, img_name, im_num)
+            # self.save_img(out_image, img_name, im_num)
             print("done im: " + str(im_num))
             print("--- %s seconds ---" % (time.time() - start_time))
             # print('generate seq: {}'.format(num_ops))  # number of operations

@@ -42,9 +42,9 @@ class EdgeDetect:
 
     def gen_seq(self, length):
         # import image
-        img_name = 'cm_'
+        img_name = 'frac_'
         num_ops = 0
-        image = Image.open('camera_man.png').convert('L')
+        image = Image.open('fractal_rez.jpg').convert('L')
 
         # gen first image
         im1 = self.processImage(image)
@@ -62,7 +62,8 @@ class EdgeDetect:
 
             # add matrix, then divide by number of frames and resize to grayscale image
             sc_mat = np.add(sc_mat, bin_image)
-            self.save_img((sc_mat/(im_num+2))*255, img_name, im_num)
+            if im_num % 5 == 0 or im_num < 10:
+                self.save_img((sc_mat/(im_num+2))*255, img_name, im_num)
 
             print("done im: " + str(im_num))
             print("--- %s seconds ---" % (time.time() - start_time))
@@ -76,7 +77,7 @@ class EdgeDetect:
 
 def main():
     ed = EdgeDetect()
-    ed.gen_seq(20)
+    ed.gen_seq(41)
 
 
 if __name__ == '__main__':

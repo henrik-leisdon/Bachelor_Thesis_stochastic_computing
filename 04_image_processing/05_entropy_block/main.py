@@ -37,20 +37,20 @@ class EdgeDetect:
         # print('process img: {}'.format(num_ops))
         return img_edg
 
-    def gen_seq(self, length):
+    def gen_seq(self, length, img_pow):
         # import image
-        img_name = 'gauss_c_'
+        img_name = 'sp_pow_'
         num_ops = 0
-        image = Image.open('gauss_noise_crop.png').convert('L')
+        image = Image.open('cm_sp_original.jpg').convert('L')
 
-        entr_image = entropy.blocks(image)/255
+        entr_image = entropy.combine_entr(image, img_pow)/255
 
         # gen first image
         im1 = self.processImage(image)
         print(im1)
         result = Image.fromarray(im1 * 255)
         r = result.convert("L")
-        r.save(img_name + str(0) + ".png")
+        r.save(img_name + str(img_pow) + " " + str(0) + ".png")
         seq = [im1]
 
         start_time = 0
@@ -73,20 +73,32 @@ class EdgeDetect:
 
                     out_image[i][j] = (one_ctr / len(seq)) * 255
             out_image = np.multiply(out_image, entr_image)
-            if im_num % 5 == 0:
-                self.save_img(out_image, img_name, im_num)
+
+            if im_num % 5 == 0 or im_num < 10:
+                self.save_img(out_image, img_name, im_num, img_pow)
             print("done im: " + str(im_num))
             print("--- %s seconds ---" % (time.time() - start_time))
 
-    def save_img(self, img_mat, img_name, img_num):
+    def save_img(self, img_mat, img_name, img_num, img_pow):
         result = Image.fromarray(img_mat)
         r = result.convert("L")
-        r.save(str(img_name) + str(img_num + 1) + ".png")
+        img_pow = round(img_pow, 1)
+        r.save(str(img_name) + str(img_pow) + "_" + str(img_num + 1) + ".png")
+
+
+def get_best_theshold():
+
+    pow = 0.4
+    for _ in range(0, 30):
+        ed = EdgeDetect()
+        pow += 0.1
+        ed.gen_seq(41, pow)
 
 
 def main():
-    ed = EdgeDetect()
-    ed.gen_seq(50)
+    get_best_theshold()
+    #ed = EdgeDetect()
+    #ed.gen_seq(41)
 
 
 if __name__ == '__main__':

@@ -29,7 +29,7 @@ class EdgeDetect:
             num_ops += 1
         # self.msc.gen_rc()
 
-        self.save_img(img_sto * 255, "raw_img", self.it)
+        # self.save_img(img_sto * 255, "raw_img", self.it)
         self.it += 1
         self.msc.gen_rc()
         # loop for roberts cross operator
@@ -47,9 +47,9 @@ class EdgeDetect:
 
     def gen_seq(self, length):
         # import image
-        img_name = 'cm_adv_'
+        img_name = 'st_'
         num_ops = 0
-        image = Image.open('img/11_camera_man/camera_man.png').convert('L')
+        image = Image.open('rsz_stairs.jpg').convert('L')
 
         # gen first image
         im1 = self.processImage(image)
@@ -78,7 +78,8 @@ class EdgeDetect:
                             one_ctr += 1
                     out_image[i][j] = (one_ctr / len(seq)) * 255
 
-            self.save_img(out_image, img_name, im_num)
+            if im_num % 5 == 0 or im_num < 10:
+                self.save_img(out_image, img_name, im_num)
             print("done im: " + str(im_num))
             print("--- %s seconds ---" % (time.time() - start_time))
             # print('generate seq: {}'.format(num_ops))
@@ -91,7 +92,7 @@ class EdgeDetect:
 
 def main():
     ed = EdgeDetect()
-    ed.gen_seq(20)
+    ed.gen_seq(41)
 
 
 if __name__ == '__main__':
