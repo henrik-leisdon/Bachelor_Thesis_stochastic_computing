@@ -25,13 +25,16 @@ Approach:
   * every value below the threshold is 0, every value above is a 1
   
 Example for Binary Image:
+
 [binary image](https://user-images.githubusercontent.com/33347624/121353841-97f49800-c92e-11eb-9902-f6f9e369fbe4.png)
 
   * apply the stochastic version of the roberts cross operator to detect the edges
   * add the edge detected pixel value to the stochastic bitstream for every pixel 
 
 Over Time this image gets more and more precise:
+
 ![First Iteration](https://user-images.githubusercontent.com/33347624/121482454-772f4f80-c9cd-11eb-9a73-23952f8fe55d.png)
+
 
 ![100th Iteration](https://user-images.githubusercontent.com/33347624/121482520-86ae9880-c9cd-11eb-9432-bce3c3ba1e2e.png)
 
