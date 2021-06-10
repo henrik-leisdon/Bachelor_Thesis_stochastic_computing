@@ -39,6 +39,7 @@ Over Time this image gets more and more precise:
 
 
 * 100th iteration
+* 
 ![100th Iteration](https://user-images.githubusercontent.com/33347624/121482520-86ae9880-c9cd-11eb-9432-bce3c3ba1e2e.png)
 
 
